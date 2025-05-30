@@ -1,0 +1,19 @@
+{
+  "name": "ai-todo-app",
+  "version": "1.0.0",
+  "description": "An AI-powered todo application with natural language processing, smart prioritization, and voice recognition",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install"
+  },
+  "keywords": ["todo", "ai", "nlp", "voice-recognition", "productivity"],
+  "author": "AI Todo Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
