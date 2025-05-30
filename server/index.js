@@ -6,6 +6,10 @@ const compromise = require('compromise');
 const { v4: uuidv4 } = require('uuid');
 const moment = require('moment');
 const OpenAI = require('openai');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 // Simple date parsing function as fallback
@@ -52,9 +56,40 @@ const openai = process.env.OPENAI_API_KEY ? new OpenAI({
 }) : null;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://127.0.0.1:3000',
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Session configuration
+app.use(session({
+  name: 'connect.sid', // Explicit session name
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: true, // Changed to true to ensure session persistence
+  saveUninitialized: true, // Changed to true to create sessions
+  rolling: false, // Don't refresh on each request
+  cookie: {
+    secure: false, // Set to true in production with HTTPS
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'lax',
+    path: '/',
+    httpOnly: false // Allow client-side access for debugging
+  }
+}));
+
+// Debug middleware to log session info
+app.use((req, res, next) => {
+  console.log('Session ID:', req.sessionID);
+  console.log('Session data:', req.session);
+  console.log('Is authenticated:', req.isAuthenticated ? req.isAuthenticated() : false);
+  next();
+});
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // PostgreSQL connection setup
 const pool = new Pool({
@@ -67,6 +102,7 @@ const pool = new Pool({
 // Initialize database table
 const initDatabase = async () => {
   try {
+    // Create tasks table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS tasks (
         id VARCHAR(255) PRIMARY KEY,
@@ -80,7 +116,21 @@ const initDatabase = async () => {
         completed_at TIMESTAMP,
         is_repetitive INTEGER DEFAULT 0 CHECK (is_repetitive IN (0, 1)),
         next_occurrence TIMESTAMP,
-        position INTEGER DEFAULT 0
+        position INTEGER DEFAULT 0,
+        user_id VARCHAR(255)
+      )
+    `);
+
+    // Create users table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id VARCHAR(255) PRIMARY KEY,
+        google_id VARCHAR(255) UNIQUE,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        picture VARCHAR(500),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
     
@@ -179,7 +229,16 @@ const initDatabase = async () => {
     } catch (alterError) {
       // Column might already exist, ignore error
     }
-    console.log('Database table initialized successfully');
+
+    // Add user_id column if it doesn't exist (for existing databases)
+    try {
+      await pool.query(`
+        ALTER TABLE tasks ADD COLUMN IF NOT EXISTS user_id VARCHAR(255);
+      `);
+    } catch (alterError) {
+      // Column might already exist, ignore error
+    }
+    console.log('Database tables initialized successfully');
   } catch (err) {
     console.log('Database initialization failed, using in-memory storage:', err.message);
   }
@@ -187,6 +246,70 @@ const initDatabase = async () => {
 
 // Initialize database on startup
 initDatabase();
+
+// Passport Google OAuth Strategy
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: process.env.GOOGLE_REDIRECT_URI
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    // Check if user already exists
+    const existingUser = await pool.query(
+      'SELECT * FROM users WHERE google_id = $1',
+      [profile.id]
+    );
+
+    if (existingUser.rows.length > 0) {
+      // Update last login
+      await pool.query(
+        'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE google_id = $1',
+        [profile.id]
+      );
+      return done(null, existingUser.rows[0]);
+    }
+
+    // Create new user
+    const newUser = {
+      id: uuidv4(),
+      google_id: profile.id,
+      email: profile.emails[0].value,
+      name: profile.displayName,
+      picture: profile.photos[0].value
+    };
+
+    await pool.query(
+      'INSERT INTO users (id, google_id, email, name, picture) VALUES ($1, $2, $3, $4, $5)',
+      [newUser.id, newUser.google_id, newUser.email, newUser.name, newUser.picture]
+    );
+
+    return done(null, newUser);
+  } catch (error) {
+    return done(error, null);
+  }
+}));
+
+// Passport serialization
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    done(null, result.rows[0]);
+  } catch (error) {
+    done(error, null);
+  }
+});
+
+// Authentication middleware
+const requireAuth = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ error: 'Authentication required' });
+};
 
 // Recurring task management
 const createRecurringTask = async (originalTask) => {
@@ -404,14 +527,68 @@ Return only valid JSON:`;
   }
 }
 
+// Authentication Routes
+
+// Google OAuth login
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+// Google OAuth callback
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: 'http://127.0.0.1:3000/login' }),
+  (req, res) => {
+    // User is already authenticated by passport.authenticate
+    // Just save the session and redirect
+    req.session.save((saveErr) => {
+      if (saveErr) {
+        console.error('Session save error:', saveErr);
+        return res.redirect('http://127.0.0.1:3000/login');
+      }
+      
+      console.log('User successfully authenticated:', req.user);
+      console.log('Session after login:', req.session);
+      
+      // Successful authentication, redirect to frontend
+      res.redirect('http://127.0.0.1:3000');
+    });
+  }
+);
+
+// Logout
+app.post('/auth/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Logout failed' });
+    }
+    res.json({ message: 'Logged out successfully' });
+  });
+});
+
+// Get current user
+app.get('/auth/user', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({
+      user: {
+        id: req.user.id,
+        name: req.user.name,
+        email: req.user.email,
+        picture: req.user.picture
+      }
+    });
+  } else {
+    res.status(401).json({ error: 'Not authenticated' });
+  }
+});
+
 // Routes
 
 // Get all tasks
-app.get('/api/tasks', async (req, res) => {
+app.get('/api/tasks', requireAuth, async (req, res) => {
   try {
     let allTasks;
     try {
-      const result = await pool.query('SELECT * FROM tasks ORDER BY status, position ASC, created_at DESC');
+      const result = await pool.query('SELECT * FROM tasks WHERE user_id = $1 ORDER BY status, position ASC, created_at DESC', [req.user.id]);
       allTasks = result.rows.map(row => ({
         id: row.id,
         title: row.title,
@@ -437,7 +614,7 @@ app.get('/api/tasks', async (req, res) => {
 });
 
 // Create task with AI processing
-app.post('/api/tasks', async (req, res) => {
+app.post('/api/tasks', requireAuth, async (req, res) => {
   console.log('\n=== TASK CREATION DEBUG START ===');
   console.log('Request timestamp:', new Date().toISOString());
   console.log('Request body:', JSON.stringify(req.body, null, 2));
@@ -509,8 +686,8 @@ app.post('/api/tasks', async (req, res) => {
     
     try {
       console.log('Attempting database insert...');
-      const insertQuery = 'INSERT INTO tasks (id, title, due_date, priority, completed, status, tags, created_at, is_repetitive, next_occurrence) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
-      const insertValues = [newTask.id, newTask.title, newTask.dueDate, newTask.priority, newTask.completed, newTask.status, newTask.tags, newTask.createdAt, newTask.isRepetitive, newTask.nextOccurrence];
+      const insertQuery = 'INSERT INTO tasks (id, title, due_date, priority, completed, status, tags, created_at, is_repetitive, next_occurrence, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)';
+      const insertValues = [newTask.id, newTask.title, newTask.dueDate, newTask.priority, newTask.completed, newTask.status, newTask.tags, newTask.createdAt, newTask.isRepetitive, newTask.nextOccurrence, req.user.id];
       
       console.log('SQL Query:', insertQuery);
       console.log('SQL Values:', insertValues);
@@ -548,7 +725,7 @@ app.post('/api/tasks', async (req, res) => {
 });
 
 // Update task
-app.put('/api/tasks/:id', async (req, res) => {
+app.put('/api/tasks/:id', requireAuth, async (req, res) => {
   console.log('Received PUT request to update task with ID:', req.params.id);
   try {
     const { id } = req.params;
@@ -640,10 +817,11 @@ app.put('/api/tasks/:id', async (req, res) => {
         paramCount++;
       });
       
-      values.push(id); // Add id as last parameter
+      values.push(id); // Add id as parameter
+      values.push(req.user.id); // Add user_id as last parameter
       
       const result = await pool.query(
-        `UPDATE tasks SET ${updateFields.join(', ')} WHERE id = $${paramCount} RETURNING *`,
+        `UPDATE tasks SET ${updateFields.join(', ')} WHERE id = $${paramCount} AND user_id = $${paramCount + 1} RETURNING *`,
         values
       );
       
@@ -680,12 +858,12 @@ app.put('/api/tasks/:id', async (req, res) => {
 });
 
 // Delete task
-app.delete('/api/tasks/:id', async (req, res) => {
+app.delete('/api/tasks/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     
     try {
-      const result = await pool.query('DELETE FROM tasks WHERE id = $1 RETURNING *', [id]);
+      const result = await pool.query('DELETE FROM tasks WHERE id = $1 AND user_id = $2 RETURNING *', [id, req.user.id]);
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'Task not found' });
       }
@@ -703,7 +881,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
 });
 
 // Get AI recommendations
-app.get('/api/recommendations', (req, res) => {
+app.get('/api/recommendations', requireAuth, (req, res) => {
   try {
     const recommendations = AITaskProcessor.generateRecommendations(userPatterns);
     res.json(recommendations);
@@ -713,7 +891,7 @@ app.get('/api/recommendations', (req, res) => {
 });
 
 // Process voice input
-app.post('/api/voice-to-task', (req, res) => {
+app.post('/api/voice-to-task', requireAuth, (req, res) => {
   try {
     const { transcript } = req.body;
     
