@@ -152,12 +152,6 @@ OPENAI_API_KEY=your_openai_key_here  # Optional for enhanced AI features
 
 
 
-## 📊 Analytics & Insights
-
-The app provides detailed analytics including:
-
-- **Completion rates** and productivity trends
-- **Priority distribution** across your tasks
 - **AI scoring patterns** and recommendations
 - **Common task types** and habits
 - **Weekly activity** summaries
@@ -237,7 +231,6 @@ aitodo/
 - `DELETE /api/tasks/:id` - Delete task
 - `GET /api/recommendations` - Get AI recommendations
 - `POST /api/voice-to-task` - Process voice input
-- `GET /api/analytics` - Get user analytics
 
 ### Contributing
 

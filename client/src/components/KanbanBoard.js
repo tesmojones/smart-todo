@@ -155,14 +155,13 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit }) 
                   setIsEditing(false);
                 }
               }}
-              className="task-title-input"
+              className="enhanced-inline-edit"
               autoFocus
             />
           ) : (
             <h3 
               className="task-title" 
               onClick={() => setIsEditing(true)}
-              style={{ cursor: 'pointer' }}
             >
               {task.title}
             </h3>
@@ -330,6 +329,9 @@ const KanbanColumn = ({ column, tasks, onUpdateTask, onDeleteTask, onHashtagClic
         ref={ref}
         className={`column-content ${isDraggedOver ? 'dragging-over' : ''}`}
       >
+        {tasks.length === 0 && (
+          <div className="empty-column-message">No tasks for this column on the selected date.</div>
+        )}
         {tasks.map((task, index) => (
           <div key={task.id}>
             <DropZone columnId={column.id} index={index} />
@@ -382,36 +384,28 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
     setSelectedDate(new Date());
   };
 
-  // Filter tasks by selected date using YYYYMMDD format
+  // Filter tasks by selected date using YYYYMMDD format (ignore timezone)
   const filterTasksByDate = (taskList) => {
     // Convert selected date to YYYYMMDD format
     const selectedYear = selectedDate.getFullYear();
     const selectedMonth = String(selectedDate.getMonth() + 1).padStart(2, '0');
     const selectedDay = String(selectedDate.getDate()).padStart(2, '0');
     const selectedDateStr = `${selectedYear}${selectedMonth}${selectedDay}`;
-    
-  
-    
+
     const filteredTasks = taskList.filter(task => {
-      
       if (!task.createdAt) {
         console.log('❌ Task without created_at:', task.title);
         return false;
       }
-      
-      // Convert task created_at to YYYYMMDD format (ignore timezone)
+      // Use the date string as-is (ignore timezone)
       const taskDate = new Date(task.createdAt);
-      const taskYear = taskDate.getUTCFullYear();
-      const taskMonth = String(taskDate.getUTCMonth() + 1).padStart(2, '0');
-      const taskDay = String(taskDate.getUTCDate()).padStart(2, '0');
+      const taskYear = taskDate.getFullYear();
+      const taskMonth = String(taskDate.getMonth() + 1).padStart(2, '0');
+      const taskDay = String(taskDate.getDate()).padStart(2, '0');
       const taskDateStr = `${taskYear}${taskMonth}${taskDay}`;
-      
       const matches = taskDateStr === selectedDateStr;
-      
       return matches;
     });
-
-    
     return filteredTasks;
   };
 

@@ -913,34 +913,32 @@ app.post('/api/voice-to-task', requireAuth, (req, res) => {
 });
 
 // Get user patterns and analytics
-app.get('/api/analytics', async (req, res) => {
+app.get('/api/analytics', requireAuth, async (req, res) => {
   try {
     let analytics;
-    try {
-      const totalResult = await pool.query('SELECT COUNT(*) FROM tasks');
-      const completedResult = await pool.query('SELECT COUNT(*) FROM tasks WHERE completed = true');
-      const pendingResult = await pool.query('SELECT COUNT(*) FROM tasks WHERE completed = false');
-      
-      analytics = {
-        userPatterns,
-        totalTasks: parseInt(totalResult.rows[0].count),
-        completedTasks: parseInt(completedResult.rows[0].count),
-        pendingTasks: parseInt(pendingResult.rows[0].count)
-      };
-    } catch (dbError) {
-      console.log('Database analytics query failed, using in-memory storage');
-      analytics = {
-        userPatterns,
-        totalTasks: tasks.length,
-        completedTasks: tasks.filter(t => t.completed).length,
-        pendingTasks: tasks.filter(t => !t.completed).length
-      };
-    }
-    res.json(analytics);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Try to get analytics from the database
+    const result = await pool.query(
+      'SELECT COUNT(*) AS total_tasks, SUM(CASE WHEN completed THEN 1 ELSE 0 END) AS completed_tasks, SUM(CASE WHEN NOT completed THEN 1 ELSE 0 END) AS pending_tasks FROM tasks WHERE user_id = $1',
+      [req.user.id]
+    );
+    analytics = {
+      totalTasks: parseInt(result.rows[0].total_tasks, 10),
+      completedTasks: parseInt(result.rows[0].completed_tasks, 10) || 0,
+      pendingTasks: parseInt(result.rows[0].pending_tasks, 10) || 0,
+      userPatterns: userPatterns
+    };
+  } catch (err) {
+    console.log('Database analytics query failed, using in-memory storage');
+    analytics = {
+      totalTasks: tasks.filter(t => t.user_id === req.user.id).length,
+      completedTasks: tasks.filter(t => t.user_id === req.user.id && t.completed).length,
+      pendingTasks: tasks.filter(t => t.user_id === req.user.id && !t.completed).length,
+      userPatterns: userPatterns
+    };
   }
+  res.json(analytics);
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
