@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Check, X, Tag, Home, Copy, Calendar, List } from 'lucide-react';
 
-const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask, activeTab, setActiveTab }) => {
+const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask, activeTab, setActiveTab, setSelectedDate }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarData, setCalendarData] = useState({});
   const [showTaskInput, setShowTaskInput] = useState(false);
@@ -96,6 +96,13 @@ const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask, acti
   // Navigate to current month (today)
   const goToToday = () => {
     setCurrentDate(new Date());
+  };
+
+  // Handle date click to navigate to task board
+  const handleDateClick = (day) => {
+    const clickedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    setSelectedDate(clickedDate);
+    setActiveTab('tasks');
   };
 
   // Copy task data to clipboard
@@ -194,7 +201,7 @@ const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask, acti
       days.push(
         <div key={day} className={`calendar-day ${isToday ? 'today' : ''}`}>
           <div className="day-header">
-            <div className="day-number">{day}</div>
+            <div className="day-number clickable" onClick={() => handleDateClick(day)}>{day}</div>
             <div className="day-actions">
               {hasTasks && (
                 <button 

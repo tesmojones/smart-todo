@@ -130,32 +130,6 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
         opacity: isDragging ? 0.8 : isTaskDisabled ? 0.5 : 1,
       }}
     >
-      {task.status === 'in_progress' && (
-        <div 
-          className={`task-play-button ${
-            activeTimerTask?.id === task.id && isTimerRunning ? 'timer-running' : 
-            activeTimerTask?.id === task.id ? 'timer-paused' : ''
-          }`}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (activeTimerTask?.id === task.id) {
-              if (isTimerRunning) {
-                onPauseTimer();
-              } else {
-                onResumeTimer();
-              }
-            } else {
-              onStartTimer(task);
-            }
-          }}
-        >
-          {activeTimerTask?.id === task.id && isTimerRunning ? (
-            <Pause size={16} className="play-icon" />
-          ) : (
-            <Play size={16} className="play-icon" />
-          )}
-        </div>
-      )}
       <div className="task-content">
         <div className="task-header">
           {isEditing ? (
@@ -238,40 +212,10 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
             )}
           </div>
         </div>
-      </div>
 
-      <div className="task-meta">
-        <div className="priority-due-row">
-          {task.priority && (
-            <div className="meta-item priority-left">
-              <PriorityIcon className="meta-icon" />
-              <span 
-                className="priority-badge"
-                style={{
-                  backgroundColor: getPriorityColor(task.priority),
-                  color: 'white',
-                  padding: '2px 8px',
-                  borderRadius: '4px',
-                  fontSize: '12px',
-                  fontWeight: '500'
-                }}
-              >
-                {task.priority}
-              </span>
-            </div>
-          )}
-
-          {task.dueDate && (
-            <div className="meta-item due-date-right">
-              <Calendar className="meta-icon" />
-              <span>{formatDate(task.dueDate)}</span>
-            </div>
-          )}
-        </div>
-
+        {/* Tags section moved to middle */}
         {task.tags && task.tags.length > 0 && (
-          <div className="meta-item">
-            <Tag className="meta-icon" />
+          <div className="task-tags-section">
             <div className="task-tags">
               {task.tags.map((tag, index) => (
                 <span
@@ -287,7 +231,70 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
         )}
       </div>
 
+      {/* Bottom section with play button, priority, and due date */}
+      <div className="task-bottom-section">
+        <div className="task-bottom-left">
+          {task.priority && (
+            <div className="priority-item">
+              <PriorityIcon 
+                className="priority-icon" 
+                size={14}
+                style={{ color: getPriorityColor(task.priority) }}
+              />
+              <span 
+                className="priority-badge"
+                style={{
+                  backgroundColor: getPriorityColor(task.priority),
+                  color: 'white',
+                  padding: '2px 6px',
+                  borderRadius: '3px',
+                  fontSize: '11px',
+                  fontWeight: '500',
+                  textTransform: 'uppercase'
+                }}
+              >
+                {task.priority}
+              </span>
+            </div>
+          )}
 
+          {task.dueDate && (
+            <div className="due-date-item">
+              <Calendar className="due-date-icon" size={14} />
+              <span className="due-date-text">{formatDate(task.dueDate)}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="task-bottom-right">
+          {task.status === 'in_progress' && (
+            <div 
+              className={`task-play-button-bottom ${
+                activeTimerTask?.id === task.id && isTimerRunning ? 'timer-running' : 
+                activeTimerTask?.id === task.id ? 'timer-paused' : ''
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (activeTimerTask?.id === task.id) {
+                  if (isTimerRunning) {
+                    onPauseTimer();
+                  } else {
+                    onResumeTimer();
+                  }
+                } else {
+                  onStartTimer(task);
+                }
+              }}
+            >
+              {activeTimerTask?.id === task.id && isTimerRunning ? (
+                <Pause size={16} className="play-icon" />
+              ) : (
+                <Play size={16} className="play-icon" />
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
@@ -725,6 +732,7 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
               onCreateTask={onCreateTask}
               activeTab={activeTab}
               setActiveTab={setActiveTab}
+              setSelectedDate={setSelectedDate}
             />
           </div>
         )}
