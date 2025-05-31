@@ -1628,6 +1628,170 @@ body {
   position: relative;
 }
 
+.task-card.in-progress-task {
+  position: relative;
+  padding-left: 3rem;
+}
+
+.task-play-button {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  background: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  transition: all 0.2s ease;
+}
+
+.task-play-button:hover {
+  background: #2563eb;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.task-play-button .play-icon {
+  color: white;
+  margin-left: 2px;
+}
+
+.task-play-button.timer-running {
+  background: #f97316;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}
+
+.task-play-button.timer-running:hover {
+  background: #ea580c;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.task-play-button.timer-paused {
+  background: #f97316;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}
+
+.task-play-button.timer-paused:hover {
+  background: #ea580c;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.task-card.task-disabled {
+  pointer-events: none;
+  filter: grayscale(50%);
+}
+
+.task-card.task-disabled .task-play-button {
+  display: none;
+}
+
+/* Active Timer Display */
+.active-timer-display {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.timer-circle {
+  width: 200px;
+  height: 200px;
+  position: relative;
+}
+
+.timer-progress {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.timer-inner {
+  width: 160px;
+  height: 160px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.timer-time {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.timer-task-name {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+  margin-bottom: 12px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.timer-pause-btn,
+.timer-play-btn,
+.timer-stop-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timer-pause-btn,
+.timer-play-btn {
+  background: #f97316;
+  color: white;
+}
+
+.timer-pause-btn:hover,
+.timer-play-btn:hover {
+  background: #ea580c;
+  transform: scale(1.1);
+}
+
+.timer-stop-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.timer-stop-btn:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
 .task-content {
   margin-bottom: 1rem;
 }

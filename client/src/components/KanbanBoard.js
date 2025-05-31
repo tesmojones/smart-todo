@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Circle,
   Play,
+  Pause,
   ChevronLeft,
   ChevronRight,
   List,
@@ -21,7 +22,7 @@ import {
 import TaskReport from './TaskReport';
 
 
-const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit }) => {
+const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, activeTimerTask, isTimerRunning, onStartTimer, onPauseTimer, onResumeTimer }) => {
   const ref = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -118,15 +119,43 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit }) 
 
   const PriorityIcon = getPriorityIcon(task.priority);
 
+  const isTaskDisabled = activeTimerTask && activeTimerTask.id !== task.id;
+
   return (
     <div
       ref={ref}
-      className={`task-card ${isDragging ? 'dragging' : ''}`}
+      className={`task-card ${isDragging ? 'dragging' : ''} ${task.status === 'in_progress' ? 'in-progress-task' : ''} ${isTaskDisabled ? 'task-disabled' : ''}`}
       style={{
         cursor: isDragging ? 'grabbing' : 'grab',
-        opacity: isDragging ? 0.8 : 1,
+        opacity: isDragging ? 0.8 : isTaskDisabled ? 0.5 : 1,
       }}
     >
+      {task.status === 'in_progress' && (
+        <div 
+          className={`task-play-button ${
+            activeTimerTask?.id === task.id && isTimerRunning ? 'timer-running' : 
+            activeTimerTask?.id === task.id ? 'timer-paused' : ''
+          }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (activeTimerTask?.id === task.id) {
+              if (isTimerRunning) {
+                onPauseTimer();
+              } else {
+                onResumeTimer();
+              }
+            } else {
+              onStartTimer(task);
+            }
+          }}
+        >
+          {activeTimerTask?.id === task.id && isTimerRunning ? (
+            <Pause size={16} className="play-icon" />
+          ) : (
+            <Play size={16} className="play-icon" />
+          )}
+        </div>
+      )}
       <div className="task-content">
         <div className="task-header">
           {isEditing ? (
@@ -297,7 +326,7 @@ const DropZone = ({ columnId, index }) => {
   );
 };
 
-const KanbanColumn = ({ column, tasks, onUpdateTask, onDeleteTask, onHashtagClick, onEdit }) => {
+const KanbanColumn = ({ column, tasks, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, activeTimerTask, isTimerRunning, onStartTimer, onPauseTimer, onResumeTimer }) => {
   const ref = useRef(null);
   const [isDraggedOver, setIsDraggedOver] = useState(false);
 
@@ -341,6 +370,11 @@ const KanbanColumn = ({ column, tasks, onUpdateTask, onDeleteTask, onHashtagClic
               onDeleteTask={onDeleteTask}
               onHashtagClick={onHashtagClick}
               onEdit={onEdit}
+              activeTimerTask={activeTimerTask}
+              isTimerRunning={isTimerRunning}
+              onStartTimer={onStartTimer}
+              onPauseTimer={onPauseTimer}
+              onResumeTimer={onResumeTimer}
             />
           </div>
         ))}
@@ -353,6 +387,12 @@ const KanbanColumn = ({ column, tasks, onUpdateTask, onDeleteTask, onHashtagClic
 const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCreateTask, onCreateTaskRegular, activeTab, setActiveTab, selectedHashtag, onClearHashtag, selectedDate, setSelectedDate }) => {
   const [editingTask, setEditingTask] = useState(null);
   const [editTitle, setEditTitle] = useState('');
+  
+  // Pomodoro timer state
+  const [activeTimerTask, setActiveTimerTask] = useState(null);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(25 * 60); // 25 minutes in seconds
+  const [timerInterval, setTimerInterval] = useState(null);
 
   // Format date for display
   const formatDisplayDate = (date) => {
@@ -381,6 +421,77 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
   // Navigate to today
   const goToToday = () => {
     setSelectedDate(new Date());
+  };
+
+  // Timer functions
+  const startTimer = (task) => {
+    setActiveTimerTask(task);
+    setIsTimerRunning(true);
+    setTimeRemaining(25 * 60); // Reset to 25 minutes
+  };
+
+  const pauseTimer = () => {
+    setIsTimerRunning(false);
+  };
+
+  const resumeTimer = () => {
+    setIsTimerRunning(true);
+  };
+
+  const stopTimer = () => {
+    setActiveTimerTask(null);
+    setIsTimerRunning(false);
+    setTimeRemaining(25 * 60);
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+    }
+  };
+
+  // Timer countdown effect
+  useEffect(() => {
+    if (isTimerRunning && timeRemaining > 0) {
+      const interval = setInterval(() => {
+        setTimeRemaining(prev => {
+          if (prev <= 1) {
+            setIsTimerRunning(false);
+            setActiveTimerTask(null);
+            return 25 * 60; // Reset timer
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      setTimerInterval(interval);
+      return () => clearInterval(interval);
+    } else if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+    }
+  }, [isTimerRunning, timeRemaining]);
+
+  // Update document title with timer information
+  useEffect(() => {
+    if (activeTimerTask && (isTimerRunning || timeRemaining < 25 * 60)) {
+      const timeStr = formatTime(timeRemaining);
+      const status = isTimerRunning ? '⏱️' : '⏸️';
+      document.title = `${status} ${timeStr} - ${activeTimerTask.title} | AI Todo`;
+    } else {
+      document.title = 'AI Todo';
+    }
+
+    // Cleanup function to reset title when component unmounts
+    return () => {
+      if (!activeTimerTask) {
+        document.title = 'AI Todo';
+      }
+    };
+  }, [activeTimerTask, isTimerRunning, timeRemaining]);
+
+  // Format time for display
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   // Filter tasks by selected date using YYYYMMDD format (ignore timezone)
@@ -503,6 +614,35 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
 
   return (
     <div className="kanban-container">
+      {/* Active Timer Display */}
+      {activeTimerTask && (
+        <div className="active-timer-display">
+          <div className="timer-circle">
+            <div className="timer-progress" style={{
+              background: `conic-gradient(#f97316 ${((25 * 60 - timeRemaining) / (25 * 60)) * 360}deg, #e5e7eb 0deg)`
+            }}>
+              <div className="timer-inner">
+                <div className="timer-time">{formatTime(timeRemaining)}</div>
+                <div className="timer-task-name">{activeTimerTask.title}</div>
+                <div className="timer-controls">
+                  {isTimerRunning ? (
+                    <button className="timer-pause-btn" onClick={pauseTimer}>
+                      <Pause size={20} />
+                    </button>
+                  ) : (
+                    <button className="timer-play-btn" onClick={resumeTimer}>
+                      <Play size={20} />
+                    </button>
+                  )}
+                  <button className="timer-stop-btn" onClick={stopTimer}>
+                    <X size={20} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="date-navigation-section">
          
@@ -567,6 +707,11 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
                   onDeleteTask={onDeleteTask}
                   onHashtagClick={onHashtagClick}
                   onEdit={handleEdit}
+                  activeTimerTask={activeTimerTask}
+                  isTimerRunning={isTimerRunning}
+                  onStartTimer={startTimer}
+                  onPauseTimer={pauseTimer}
+                  onResumeTimer={resumeTimer}
                 />
               ))}
             </div>
