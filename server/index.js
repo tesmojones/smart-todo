@@ -393,12 +393,11 @@ class AITaskProcessor {
     }
 
     try {
+
       const prompt = `Parse this task input and extract structured information. Return a JSON object with these fields:
 - title: Clean task title (remove date/time references)
 - priority: one of "low", "medium", "high", "urgent"
-- dueDate: ISO date string if mentioned, null otherwise
-- tags: array of hashtags without # symbol
-- createdAt: ISO date string for when task should be created (e.g., if "tomorrow" then tomorrow's date)
+- dueDate: YYYY-MM-DD format date string if mentioned (e.g., if "tomorrow" then tomorrow's date), null otherwise
 
 Input: "${input}"
 
@@ -412,17 +411,22 @@ Return only valid JSON:`;
         temperature: 0.1,
         max_tokens: 200
       });
+      
+      console.log('OpenAI raw response:', JSON.stringify(response.choices[0].message.content));
+      const rawContent = response.choices[0].message.content.trim();
+      console.log('Trimmed content:', rawContent);
 
-      const result = JSON.parse(response.choices[0].message.content.trim());
+      const result = JSON.parse(rawContent);
+      console.log('Parsed result:', JSON.stringify(result, null, 2));
       
       // Validate and clean the result
-      return {
+      const finalResult = {
         title: result.title || input,
         dueDate: result.dueDate ? new Date(result.dueDate) : null,
         priority: ['low', 'medium', 'high', 'urgent'].includes(result.priority) ? result.priority : 'medium',
-        tags: Array.isArray(result.tags) ? result.tags : [],
-        createdAt: result.createdAt ? new Date(result.createdAt) : new Date()
       };
+
+      return finalResult;
     } catch (error) {
       console.error('OpenAI parsing failed:', error);
       return this.parseNaturalLanguage(input);
@@ -471,14 +475,15 @@ Return only valid JSON:`;
     // Clean title
     title = title.replace(/#\w+/g, '').replace(/\s+/g, ' ').trim();
     
-    // Determine createdAt based on input
-    let createdAt = new Date();
-    if (/tomorrow/i.test(inputText)) {
-      createdAt = moment().add(1, 'day').toDate();
-    } else if (/next week/i.test(inputText)) {
-      createdAt = moment().add(1, 'week').toDate();
-    } else if (/next month/i.test(inputText)) {
-      createdAt = moment().add(1, 'month').toDate();
+    // Set dueDate based on input if not already set by parseDate
+    if (!dueDate) {
+      if (/tomorrow/i.test(inputText)) {
+        dueDate = moment().add(1, 'day').toDate();
+      } else if (/next week/i.test(inputText)) {
+        dueDate = moment().add(1, 'week').toDate();
+      } else if (/next month/i.test(inputText)) {
+        dueDate = moment().add(1, 'month').toDate();
+      }
     }
     
     return {
@@ -486,7 +491,7 @@ Return only valid JSON:`;
       dueDate,
       priority,
       tags,
-      createdAt
+      createdAt: new Date()
     };
   }
   
@@ -621,8 +626,8 @@ app.post('/api/tasks', requireAuth, async (req, res) => {
   console.log('Request headers:', JSON.stringify(req.headers, null, 2));
   
   try {
-    const { input, title, dueDate, priority, text, taskType } = req.body;
-    console.log('Extracted fields:', { input, title, dueDate, priority, text, taskType });
+    const { input, title, dueDate, priority, text, taskType, createdAt } = req.body;
+    console.log('Extracted fields:', { input, title, dueDate, priority, text, taskType, createdAt });
     
     // Extract taskType from input object if it exists there
     let actualTaskType = taskType;
@@ -642,11 +647,12 @@ app.post('/api/tasks', requireAuth, async (req, res) => {
         console.log('Using AI to parse natural language input...');
         // Use AI to parse natural language input with OpenAI
         taskData = await AITaskProcessor.parseWithOpenAI(inputText);
+
         console.log('AI parsing result:', JSON.stringify(taskData, null, 2));
       } else {
         console.log('No input text found, using fallback structured data');
         // Fallback to structured data
-        taskData = { title: title || 'New Task', dueDate, priority: priority || 'medium', tags: [], createdAt: new Date() };
+        taskData = { title: title || 'New Task', dueDate, priority: priority || 'medium', tags: [], createdAt };
         console.log('Fallback taskData:', JSON.stringify(taskData, null, 2));
       }
     } else if (text) {
@@ -672,6 +678,7 @@ app.post('/api/tasks', requireAuth, async (req, res) => {
       console.log('Next occurrence calculated:', nextOccurrence.toISOString());
     }
     
+    console.log('Check Task data before inserting:', JSON.stringify(taskData, null, 2));
     const newTask = {
       id: uuidv4(),
       ...taskData,

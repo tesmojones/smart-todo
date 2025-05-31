@@ -350,10 +350,9 @@ const KanbanColumn = ({ column, tasks, onUpdateTask, onDeleteTask, onHashtagClic
   );
 };
 
-const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCreateTask, onCreateTaskRegular, activeTab, setActiveTab, selectedHashtag, onClearHashtag }) => {
+const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCreateTask, onCreateTaskRegular, activeTab, setActiveTab, selectedHashtag, onClearHashtag, selectedDate, setSelectedDate }) => {
   const [editingTask, setEditingTask] = useState(null);
   const [editTitle, setEditTitle] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Format date for display
   const formatDisplayDate = (date) => {
@@ -504,78 +503,87 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
 
   return (
     <div className="kanban-container">
-      <div className="kanban-header">
-        <div className="kanban-nav">
-          <button 
-            className={`nav-btn ${activeTab === 'tasks' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tasks')}
-          >
-            <List className="nav-icon" />
-             
-          </button>
-          <button 
-            className={`nav-btn ${activeTab === 'report' ? 'active' : ''}`}
-            onClick={() => setActiveTab('report')}
-          >
-            <Calendar className="nav-icon" />
-            
-          </button>
-        </div>
-        <div className="date-navigation">
-          <button 
-            className="date-nav-btn today-btn" 
-            onClick={goToToday}
-            title="Go to today"
-          >
-            <Home size={18} />
-          </button>
-          <button 
-            className="date-nav-btn" 
-            onClick={goToPreviousDay}
-            title="Previous day"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <div className="current-date">
-            {formatDisplayDate(selectedDate)}
+
+      <div className="date-navigation-section">
+         
+        {/* Content Area - Kanban Board or Task Report */}
+        {activeTab === 'tasks' ? (
+          <div className="kanban-board-container">
+            <div className="kanban-header-section">
+              <div className="header-content">
+                <div className="kanban-navigation">
+                  <div className="home-section">
+                    <button 
+                      className="nav-button today-button" 
+                      onClick={goToToday}
+                      title="Go to today"
+                    >
+                      <Home size={18} />
+                    </button>
+                  </div>
+                  
+                  <div className="date-section">
+                    <button 
+                      className="nav-button" 
+                      onClick={goToPreviousDay}
+                      title="Previous day"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+                    <h3 className="current-date-header">{formatDisplayDate(selectedDate)}</h3>
+                    <button 
+                      className="nav-button" 
+                      onClick={goToNextDay}
+                      title="Next day"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+
+                  <div className="kanban-nav">
+                    <button 
+                      className={`nav-btn ${activeTab === 'tasks' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('tasks')}
+                    >
+                      <List className="nav-icon" />
+                    </button>
+                    <button 
+                      className={`nav-btn ${activeTab === 'report' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('report')}
+                    >
+                      <Calendar className="nav-icon" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="kanban-board">
+              {Object.values(columns).map((column) => (
+                <KanbanColumn
+                  key={column.id}
+                  column={column}
+                  tasks={tasksByStatus[column.id] || []}
+                  onUpdateTask={onUpdateTask}
+                  onDeleteTask={onDeleteTask}
+                  onHashtagClick={onHashtagClick}
+                  onEdit={handleEdit}
+                />
+              ))}
+            </div>
           </div>
-          <button 
-            className="date-nav-btn" 
-            onClick={goToNextDay}
-            title="Next day"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
-      </div>
-
-
-
-      {/* Content Area - Kanban Board or Task Report */}
-      {activeTab === 'tasks' ? (
-        <div className="kanban-board">
-          {Object.values(columns).map((column) => (
-            <KanbanColumn
-              key={column.id}
-              column={column}
-              tasks={tasksByStatus[column.id] || []}
-              onUpdateTask={onUpdateTask}
-              onDeleteTask={onDeleteTask}
-              onHashtagClick={onHashtagClick}
-              onEdit={handleEdit}
+        ) : (
+          <div className="task-report-container">
+            <TaskReport 
+              tasks={tasks}
+              selectedHashtag={selectedHashtag}
+              onClearHashtag={onClearHashtag}
+              onCreateTask={onCreateTask}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
             />
-          ))}
-        </div>
-      ) : (
-        <div className="task-report-container">
-          <TaskReport 
-            tasks={tasks}
-            selectedHashtag={selectedHashtag}
-            onClearHashtag={onClearHashtag}
-            onCreateTask={onCreateTask}
-          />
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
 
 

@@ -189,10 +189,6 @@ body {
 }
 
 /* Kanban Navigation */
-.kanban-nav {
-  display: flex;
-  gap: 0;
-}
 
 .kanban-nav .nav-btn {
   display: flex;
@@ -1444,6 +1440,8 @@ body {
   padding: 0.75rem 1rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-left: auto;
+  width: fit-content;
 }
 
 .current-date {
@@ -1500,8 +1498,64 @@ body {
   backdrop-filter: blur(10px);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 0rem;
+  margin-bottom: 2rem;
+}
+
+.kanban-board-container {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   margin-bottom: 2rem;
+}
+
+.kanban-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.kanban-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+
+.home-section {
+  flex: 0 0 auto;
+}
+
+.date-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  justify-content: center;
+  padding-left: 6rem;
+}
+
+.kanban-nav {
+  display: flex;
+  gap: 0;
+  flex: 0 0 auto;
+}
+
+.current-date-header {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #667eea;
+  min-width: 200px;
+  text-align: center;
 }
 
 .kanban-column {
@@ -2354,7 +2408,7 @@ body {
 .task-report {
   width: 100%;
   margin: 0;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .report-header {
@@ -2371,7 +2425,6 @@ body {
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   width: 100%;
   gap: 1rem;
 }
@@ -2412,7 +2465,9 @@ body {
 .calendar-navigation {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem;
+  width: 100%;
 }
 
 .nav-button {
@@ -2446,8 +2501,9 @@ body {
 
 .current-month {
   margin: 0;
-  color: #333;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #667eea;
   min-width: 200px;
   text-align: center;
 }

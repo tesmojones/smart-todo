@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Check, X, Tag, Home, Copy } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Check, X, Tag, Home, Copy, Calendar, List } from 'lucide-react';
 
-const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask }) => {
+const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask, activeTab, setActiveTab }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarData, setCalendarData] = useState({});
   const [showTaskInput, setShowTaskInput] = useState(false);
@@ -138,6 +138,7 @@ const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask }) =>
     try {
       // Create date for the selected day
       const taskDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), selectedDay);
+      taskDate.setTime(taskDate.getTime() + (12 * 60 * 60 * 1000)); // Set to noon to avoid timezone issues
       
       if (onCreateTask) {
         await onCreateTask(taskInput, taskDate);
@@ -264,16 +265,34 @@ const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask }) =>
             </div>
           )}
           <div className="calendar-navigation">
-            <button onClick={goToToday} className="nav-button today-button" title="Go to current month">
-              <Home size={18} />
-            </button>
-            <button onClick={goToPreviousMonth} className="nav-button">
-              <ChevronLeft size={20} />
-            </button>
-            <h3 className="current-month">{formatMonthYear(currentDate)}</h3>
-            <button onClick={goToNextMonth} className="nav-button">
-              <ChevronRight size={20} />
-            </button>
+            <div className="home-section">
+              <button onClick={goToToday} className="nav-button today-button" title="Go to current month">
+                <Home size={18} />
+              </button>
+            </div>
+            <div className="date-section">
+              <button onClick={goToPreviousMonth} className="nav-button">
+                <ChevronLeft size={20} />
+              </button>
+              <h3 className="current-month">{formatMonthYear(currentDate)}</h3>
+              <button onClick={goToNextMonth} className="nav-button">
+                <ChevronRight size={20} />
+              </button>
+            </div>
+            <div className="kanban-nav">
+              <button 
+                className={`nav-btn ${activeTab === 'tasks' ? 'active' : ''}`}
+                onClick={() => setActiveTab('tasks')}
+              >
+                <List className="nav-icon" />
+              </button>
+              <button 
+                className={`nav-btn ${activeTab === 'report' ? 'active' : ''}`}
+                onClick={() => setActiveTab('report')}
+              >
+                <Calendar className="nav-icon" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

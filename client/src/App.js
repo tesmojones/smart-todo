@@ -17,6 +17,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('tasks');
   const [selectedHashtag, setSelectedHashtag] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   
   const {
     transcript,
@@ -254,6 +255,8 @@ function App() {
             selectedHashtag={selectedHashtag}
             onClearHashtag={() => setSelectedHashtag(null)}
             onCreateTask={createTaskWithDate}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
           />
         </div>
       </main>
@@ -265,7 +268,7 @@ function App() {
       {/* Task Input - positioned as floating button */}
       <TaskInput 
         onCreateTask={createTaskWithDate}
-        selectedDate={new Date()}
+        selectedDate={selectedDate}
         isLoading={isLoading}
       />
     </div>
