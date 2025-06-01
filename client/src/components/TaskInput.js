@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, MessageCircle, Lightbulb, Minimize2, Maximize2, X } from 'lucide-react';
+import { Send, Sparkles, MessageCircle, Lightbulb, Minimize2, Maximize2, X, HelpCircle } from 'lucide-react';
 
 const TaskInput = ({ onCreateTask, isLoading, selectedDate }) => {
   const [input, setInput] = useState('');
@@ -239,18 +239,28 @@ const TaskInput = ({ onCreateTask, isLoading, selectedDate }) => {
           </div>
           <button 
             className="control-btn"
-            onClick={() => setIsMinimized(!isMinimized)}
-            title={isMinimized ? 'Expand' : 'Minimize'}
+            onClick={() => setIsRepeating(!isRepeating)}
+            title={isRepeating ? 'Switch to one-time task' : 'Switch to recurring task'}
           >
-            {isMinimized ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
+            {isRepeating ? '🔄' : '📝'}
           </button>
-          <button 
-            className="control-btn"
-            onClick={() => setIsVisible(false)}
-            title="Close"
+          <button
+            type="button"
+            className="chatbot-help-btn"
+            onClick={() => {
+              const helpMessage = {
+                id: Date.now(),
+                type: 'bot',
+                content: '💡 **Quick Tips:**\n\n• Use natural language: "Call mom tomorrow at 2pm"\n• Add tags: "#work Review quarterly reports"\n• Set priorities: "High priority: Fix website bug"\n• Create recurring tasks: "Weekly team meeting every Monday"\n\nI\'ll automatically extract due dates, priorities, and tags from your input!',
+                timestamp: new Date()
+              };
+              setMessages(prev => [...prev, helpMessage]);
+            }}
+            title="Get help with task creation"
           >
-            <X size={16} />
+            <HelpCircle size={16} />
           </button>
+
         </div>
       </div>
       

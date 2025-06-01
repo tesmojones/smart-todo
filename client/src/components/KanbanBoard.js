@@ -14,12 +14,16 @@ import {
   Pause,
   ChevronLeft,
   ChevronRight,
-  List,
+  Kanban,
   MoreVertical,
   Trash2,
-  Home
+  Home,
+  Settings as SettingsIcon,
+  BarChart3,
+  HelpCircle
 } from 'lucide-react';
 import TaskReport from './TaskReport';
+import Settings from './Settings';
 
 
 const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, activeTimerTask, isTimerRunning, onStartTimer, onPauseTimer, onResumeTimer }) => {
@@ -168,6 +172,8 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
                 e.stopPropagation();
                 setShowMenu(!showMenu);
               }}
+              title="Task options"
+              aria-label="Open task menu"
             >
               <MoreVertical size={16} />
             </button>
@@ -177,24 +183,31 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
                 <button 
                   className="task-menu-item"
                   onClick={moveToNextDay}
+                  title="Reschedule task to tomorrow"
                 >
+                  <Calendar size={14} />
                   Move to Next Day
                 </button>
                 <button 
                   className="task-menu-item"
                   onClick={moveToNextWeek}
+                  title="Reschedule task to next week"
                 >
+                  <Calendar size={14} />
                   Move to Next Week
                 </button>
                 <button 
                   className="task-menu-item"
                   onClick={moveToNextMonth}
+                  title="Reschedule task to next month"
                 >
+                  <Calendar size={14} />
                   Move to Next Month
                 </button>
                 <button 
                   className="task-menu-item delete-item"
                   onClick={deleteTask}
+                  title="Permanently delete this task"
                 >
                   <Trash2 size={14} />
                   Delete Task
@@ -254,7 +267,7 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
 
         <div className="task-bottom-right">
           {task.status === 'in_progress' && (
-            <div 
+            <button 
               className={`task-play-button-bottom ${
                 activeTimerTask?.id === task.id && isTimerRunning ? 'timer-running' : 
                 activeTimerTask?.id === task.id ? 'timer-paused' : ''
@@ -271,13 +284,27 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
                   onStartTimer(task);
                 }
               }}
+              title={
+                activeTimerTask?.id === task.id && isTimerRunning 
+                  ? 'Pause timer' 
+                  : activeTimerTask?.id === task.id 
+                    ? 'Resume timer' 
+                    : 'Start timer'
+              }
+              aria-label={
+                activeTimerTask?.id === task.id && isTimerRunning 
+                  ? 'Pause timer' 
+                  : activeTimerTask?.id === task.id 
+                    ? 'Resume timer' 
+                    : 'Start timer'
+              }
             >
               {activeTimerTask?.id === task.id && isTimerRunning ? (
                 <Pause size={16} className="play-icon" />
               ) : (
                 <Play size={16} className="play-icon" />
               )}
-            </div>
+            </button>
           )}
         </div>
       </div>
@@ -704,14 +731,26 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
                     <button 
                       className={`nav-btn ${activeTab === 'tasks' ? 'active' : ''}`}
                       onClick={() => setActiveTab('tasks')}
+                      title="Task Board - Manage your tasks"
                     >
-                      <List className="nav-icon" />
+                      <Kanban className="nav-icon" />
+                      <span className="nav-label">Tasks</span>
                     </button>
                     <button 
                       className={`nav-btn ${activeTab === 'report' ? 'active' : ''}`}
                       onClick={() => setActiveTab('report')}
+                      title="Analytics & Reports - View your productivity insights"
                     >
-                      <Calendar className="nav-icon" />
+                      <BarChart3 className="nav-icon" />
+                      <span className="nav-label">Reports</span>
+                    </button>
+                    <button 
+                      className={`nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('settings')}
+                      title="Settings - Configure your preferences"
+                    >
+                      <SettingsIcon className="nav-icon" />
+                      <span className="nav-label">Settings</span>
                     </button>
                   </div>
                 </div>
@@ -736,7 +775,7 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
               ))}
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'report' ? (
           <div className="task-report-container">
             <TaskReport 
               tasks={tasks}
@@ -748,7 +787,14 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
               setSelectedDate={setSelectedDate}
             />
           </div>
-        )}
+        ) : activeTab === 'settings' ? (
+          <div className="settings-container-wrapper">
+            <Settings 
+              user={null}
+              onUpdateUser={() => {}}
+            />
+          </div>
+        ) : null}
       </div>
 
 
