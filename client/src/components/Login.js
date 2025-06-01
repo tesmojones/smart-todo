@@ -110,7 +110,7 @@ const Login = ({ onLogin }) => {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <h1>AI Todo App</h1>
+          <h1>Tesmo Todo</h1>
           <p>Organize your tasks with AI-powered intelligence</p>
         </div>
         

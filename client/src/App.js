@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Brain } from 'lucide-react';
+import { CheckSquare, Sparkles, Pause, Play, X } from 'lucide-react';
 import KanbanBoard from './components/KanbanBoard';
 import TaskInput from './components/TaskInput';
 import Login from './components/Login';
@@ -28,6 +28,10 @@ function App() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTimerTask, setActiveTimerTask] = useState(null);
+  const [timeRemaining, setTimeRemaining] = useState(25 * 60);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [timerInterval, setTimerInterval] = useState(null);
   const [activeTab, setActiveTab] = useState('tasks');
   const [selectedHashtag, setSelectedHashtag] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -42,6 +46,45 @@ function App() {
       timestamp: new Date().toISOString()
     });
   }, [user]);
+
+  // Timer countdown effect
+  useEffect(() => {
+    if (isTimerRunning && timeRemaining > 0) {
+      const interval = setInterval(() => {
+        setTimeRemaining(prev => {
+          if (prev <= 1) {
+            setIsTimerRunning(false);
+            setActiveTimerTask(null);
+            return 25 * 60; // Reset timer
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      setTimerInterval(interval);
+      return () => clearInterval(interval);
+    } else if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+    }
+  }, [isTimerRunning, timeRemaining]);
+
+  // Update document title with timer information
+  useEffect(() => {
+    if (activeTimerTask && (isTimerRunning || timeRemaining < 25 * 60)) {
+      const timeStr = formatTime(timeRemaining);
+      const status = isTimerRunning ? '⏱️' : '⏸️';
+      document.title = `${status} ${timeStr} - ${activeTimerTask.title} | Tesmo Todo`;
+    } else {
+      document.title = 'Tesmo Todo';
+    }
+
+    // Cleanup function to reset title when component unmounts
+    return () => {
+      if (!activeTimerTask) {
+        document.title = 'Tesmo Todo';
+      }
+    };
+  }, [activeTimerTask, isTimerRunning, timeRemaining]);
   
   // Debug: Log tasks state changes
   useEffect(() => {
@@ -137,6 +180,32 @@ function App() {
       console.log('🚪 [DEBUG] Logging out, removing token');
       removeToken();
     }
+  };
+
+  // Timer functions
+  const pauseTimer = () => {
+    setIsTimerRunning(false);
+  };
+
+  const resumeTimer = () => {
+    setIsTimerRunning(true);
+  };
+
+  const stopTimer = () => {
+    setActiveTimerTask(null);
+    setIsTimerRunning(false);
+    setTimeRemaining(25 * 60);
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+    }
+  };
+
+  // Format time for display
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
 
@@ -340,18 +409,53 @@ function App() {
       <header className="app-header">
         <div className="header-content">
           <div className="logo">
-            <Brain className="logo-icon" />
-            <h1>AI Todo</h1>
-            <span className="tagline">Smart Task Management</span>
+            <div className="logo-icon-wrapper">
+              <CheckSquare className="logo-icon" />
+              <Sparkles className="logo-accent" />
+            </div>
+            <div className="logo-text">
+              <h1>Tesmo Todo</h1>
+              <span className="tagline">Intelligent Task Management</span>
+            </div>
           </div>
           
           <div className="header-right">
-            {/* User info */}
+            {/* Active Timer Display */}
+            {activeTimerTask && (
+              <div className="active-timer-display-header">
+                <div className="timer-circle-header">
+                  <div className="timer-progress-header" style={{
+                    background: `conic-gradient(#f97316 ${((25 * 60 - timeRemaining) / (25 * 60)) * 360}deg, #e5e7eb 0deg)`
+                  }}>
+                    <div className="timer-inner-header">
+                      <div className="timer-time-header">{formatTime(timeRemaining)}</div>
+                      <div className="timer-task-name-header">{activeTimerTask.title}</div>
+                      <div className="timer-controls-header">
+                        {isTimerRunning ? (
+                          <button className="timer-pause-btn-header" onClick={pauseTimer}>
+                            <Pause size={16} />
+                          </button>
+                        ) : (
+                          <button className="timer-play-btn-header" onClick={resumeTimer}>
+                            <Play size={16} />
+                          </button>
+                        )}
+                        <button className="timer-stop-btn-header" onClick={stopTimer}>
+                          <X size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="timer-info-header">
+                  <div className="timer-task-title-header">{activeTimerTask.title}</div>
+                  <div className="timer-status-header">{isTimerRunning ? 'Running' : 'Paused'}</div>
+                </div>
+              </div>
+            )}
             <Login onLogin={handleLogin} />
           </div>
         </div>
-        
-
       </header>
 
       <main className="app-main">
@@ -368,6 +472,12 @@ function App() {
             onCreateTask={createTaskWithDate}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
+            activeTimerTask={activeTimerTask}
+            setActiveTimerTask={setActiveTimerTask}
+            timeRemaining={timeRemaining}
+            setTimeRemaining={setTimeRemaining}
+            isTimerRunning={isTimerRunning}
+            setIsTimerRunning={setIsTimerRunning}
           />
         </div>
       </main>

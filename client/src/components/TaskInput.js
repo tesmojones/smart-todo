@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, MessageCircle, Lightbulb, Minimize2, Maximize2, X, HelpCircle } from 'lucide-react';
+import { Send, Sparkles, MessageCircle, Lightbulb, HelpCircle } from 'lucide-react';
 
 const TaskInput = ({ onCreateTask, isLoading, selectedDate }) => {
   const [input, setInput] = useState('');
@@ -13,7 +13,7 @@ const TaskInput = ({ onCreateTask, isLoading, selectedDate }) => {
     }
   ]);
   const [showSuggestions, setShowSuggestions] = useState(true);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);

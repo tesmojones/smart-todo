@@ -17,13 +17,14 @@ import {
   Kanban,
   MoreVertical,
   Trash2,
-  Home,
+  Locate,
   Settings as SettingsIcon,
   BarChart3,
   HelpCircle
 } from 'lucide-react';
 import TaskReport from './TaskReport';
 import Settings from './Settings';
+import TabbedNavigation from './TabbedNavigation';
 
 
 const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, activeTimerTask, isTimerRunning, onStartTimer, onPauseTimer, onResumeTimer }) => {
@@ -404,15 +405,9 @@ const KanbanColumn = ({ column, tasks, onUpdateTask, onDeleteTask, onHashtagClic
   );
 };
 
-const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCreateTask, onCreateTaskRegular, activeTab, setActiveTab, selectedHashtag, onClearHashtag, selectedDate, setSelectedDate }) => {
+const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCreateTask, onCreateTaskRegular, activeTab, setActiveTab, selectedHashtag, onClearHashtag, selectedDate, setSelectedDate, activeTimerTask, setActiveTimerTask, timeRemaining, setTimeRemaining, isTimerRunning, setIsTimerRunning }) => {
   const [editingTask, setEditingTask] = useState(null);
   const [editTitle, setEditTitle] = useState('');
-  
-  // Pomodoro timer state
-  const [activeTimerTask, setActiveTimerTask] = useState(null);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(25 * 60); // 25 minutes in seconds
-  const [timerInterval, setTimerInterval] = useState(null);
 
   // Format date for display
   const formatDisplayDate = (date) => {
@@ -462,57 +457,11 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
     setActiveTimerTask(null);
     setIsTimerRunning(false);
     setTimeRemaining(25 * 60);
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      setTimerInterval(null);
-    }
   };
 
-  // Timer countdown effect
-  useEffect(() => {
-    if (isTimerRunning && timeRemaining > 0) {
-      const interval = setInterval(() => {
-        setTimeRemaining(prev => {
-          if (prev <= 1) {
-            setIsTimerRunning(false);
-            setActiveTimerTask(null);
-            return 25 * 60; // Reset timer
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      setTimerInterval(interval);
-      return () => clearInterval(interval);
-    } else if (timerInterval) {
-      clearInterval(timerInterval);
-      setTimerInterval(null);
-    }
-  }, [isTimerRunning, timeRemaining]);
 
-  // Update document title with timer information
-  useEffect(() => {
-    if (activeTimerTask && (isTimerRunning || timeRemaining < 25 * 60)) {
-      const timeStr = formatTime(timeRemaining);
-      const status = isTimerRunning ? '⏱️' : '⏸️';
-      document.title = `${status} ${timeStr} - ${activeTimerTask.title} | AI Todo`;
-    } else {
-      document.title = 'AI Todo';
-    }
 
-    // Cleanup function to reset title when component unmounts
-    return () => {
-      if (!activeTimerTask) {
-        document.title = 'AI Todo';
-      }
-    };
-  }, [activeTimerTask, isTimerRunning, timeRemaining]);
 
-  // Format time for display
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
 
   // Filter tasks by selected date using YYYYMMDD format (ignore timezone)
   const filterTasksByDate = (taskList) => {
@@ -661,38 +610,12 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
 
   return (
     <div className="kanban-container">
-      {/* Active Timer Display */}
-      {activeTimerTask && (
-        <div className="active-timer-display">
-          <div className="timer-circle">
-            <div className="timer-progress" style={{
-              background: `conic-gradient(#f97316 ${((25 * 60 - timeRemaining) / (25 * 60)) * 360}deg, #e5e7eb 0deg)`
-            }}>
-              <div className="timer-inner">
-                <div className="timer-time">{formatTime(timeRemaining)}</div>
-                <div className="timer-task-name">{activeTimerTask.title}</div>
-                <div className="timer-controls">
-                  {isTimerRunning ? (
-                    <button className="timer-pause-btn" onClick={pauseTimer}>
-                      <Pause size={20} />
-                    </button>
-                  ) : (
-                    <button className="timer-play-btn" onClick={resumeTimer}>
-                      <Play size={20} />
-                    </button>
-                  )}
-                  <button className="timer-stop-btn" onClick={stopTimer}>
-                    <X size={20} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      <div className="date-navigation-section">
-         
+
+      {/* Tabbed Navigation */}
+      <TabbedNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+      
+      <div className="content-area">
         {/* Content Area - Kanban Board or Task Report */}
         {activeTab === 'tasks' ? (
           <div className="kanban-board-container">
@@ -705,7 +628,7 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
                       onClick={goToToday}
                       title="Go to today"
                     >
-                      <Home size={18} />
+                      <Locate size={18} />
                     </button>
                   </div>
                   
@@ -724,33 +647,6 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
                       title="Next day"
                     >
                       <ChevronRight size={20} />
-                    </button>
-                  </div>
-
-                  <div className="kanban-nav">
-                    <button 
-                      className={`nav-btn ${activeTab === 'tasks' ? 'active' : ''}`}
-                      onClick={() => setActiveTab('tasks')}
-                      title="Task Board - Manage your tasks"
-                    >
-                      <Kanban className="nav-icon" />
-                      <span className="nav-label">Tasks</span>
-                    </button>
-                    <button 
-                      className={`nav-btn ${activeTab === 'report' ? 'active' : ''}`}
-                      onClick={() => setActiveTab('report')}
-                      title="Analytics & Reports - View your productivity insights"
-                    >
-                      <BarChart3 className="nav-icon" />
-                      <span className="nav-label">Reports</span>
-                    </button>
-                    <button 
-                      className={`nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
-                      onClick={() => setActiveTab('settings')}
-                      title="Settings - Configure your preferences"
-                    >
-                      <SettingsIcon className="nav-icon" />
-                      <span className="nav-label">Settings</span>
                     </button>
                   </div>
                 </div>

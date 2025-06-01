@@ -244,7 +244,7 @@ const Settings = ({ user, onUpdateUser }) => {
 
   const renderAboutSettings = () => (
     <div className="settings-section">
-      <h3>About AI Todo</h3>
+      <h3>About Tesmo Todo</h3>
       <div className="about-info">
         <div className="about-item">
           <strong>Version:</strong> 1.0.0

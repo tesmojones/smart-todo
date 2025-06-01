@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Check, X, Tag, Home, Copy, Calendar, List } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Check, X, Tag, Locate, Copy, Calendar, List } from 'lucide-react';
 
 const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask, activeTab, setActiveTab, setSelectedDate }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -274,7 +274,7 @@ const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask, acti
           <div className="calendar-navigation">
             <div className="home-section">
               <button onClick={goToToday} className="nav-button today-button" title="Go to current month">
-                <Home size={18} />
+                <Locate size={18} />
               </button>
             </div>
             <div className="date-section">
@@ -286,20 +286,7 @@ const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask, acti
                 <ChevronRight size={20} />
               </button>
             </div>
-            <div className="kanban-nav">
-              <button 
-                className={`nav-btn ${activeTab === 'tasks' ? 'active' : ''}`}
-                onClick={() => setActiveTab('tasks')}
-              >
-                <List className="nav-icon" />
-              </button>
-              <button 
-                className={`nav-btn ${activeTab === 'report' ? 'active' : ''}`}
-                onClick={() => setActiveTab('report')}
-              >
-                <Calendar className="nav-icon" />
-              </button>
-            </div>
+            
           </div>
         </div>
       </div>
