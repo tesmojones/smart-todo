@@ -4,7 +4,7 @@ import { CheckSquare, Sparkles, Pause, Play, X } from 'lucide-react';
 import KanbanBoard from './components/KanbanBoard';
 import TaskInput from './components/TaskInput';
 import Login from './components/Login';
-import TaskReport from './components/TaskReport';
+import TaskCalendar from './components/TaskCalendar';
 import './App.css';
 
 const API_BASE = 'http://127.0.0.1:5001/api';
@@ -422,34 +422,30 @@ function App() {
           <div className="header-right">
             {/* Active Timer Display */}
             {activeTimerTask && (
-              <div className="active-timer-display-header">
-                <div className="timer-circle-header">
-                  <div className="timer-progress-header" style={{
-                    background: `conic-gradient(#f97316 ${((25 * 60 - timeRemaining) / (25 * 60)) * 360}deg, #e5e7eb 0deg)`
-                  }}>
-                    <div className="timer-inner-header">
-                      <div className="timer-time-header">{formatTime(timeRemaining)}</div>
-                      <div className="timer-task-name-header">{activeTimerTask.title}</div>
-                      <div className="timer-controls-header">
-                        {isTimerRunning ? (
-                          <button className="timer-pause-btn-header" onClick={pauseTimer}>
-                            <Pause size={16} />
-                          </button>
-                        ) : (
-                          <button className="timer-play-btn-header" onClick={resumeTimer}>
-                            <Play size={16} />
-                          </button>
-                        )}
-                        <button className="timer-stop-btn-header" onClick={stopTimer}>
-                          <X size={16} />
-                        </button>
-                      </div>
+              <div className="timer-content-header">
+                <div className="timer-main-display">
+                  <div className="timer-countdown-large">{formatTime(timeRemaining)}</div>
+                  <div className="timer-task-info">
+                    <div className="timer-task-title-large">{activeTimerTask.title}</div>
+                    <div className="timer-status-indicator">
+                      <div className={`timer-status-dot ${isTimerRunning ? 'running' : 'paused'}`}></div>
+                      <span className="timer-status-text">{isTimerRunning ? 'Running' : 'Paused'}</span>
                     </div>
                   </div>
                 </div>
-                <div className="timer-info-header">
-                  <div className="timer-task-title-header">{activeTimerTask.title}</div>
-                  <div className="timer-status-header">{isTimerRunning ? 'Running' : 'Paused'}</div>
+                <div className="timer-controls-modern">
+                  {isTimerRunning ? (
+                     <button className="timer-btn-modern timer-pause" onClick={pauseTimer}>
+                       <Pause size={18} />
+                     </button>
+                   ) : (
+                     <button className="timer-btn-modern timer-play" onClick={resumeTimer}>
+                       <Play size={18} />
+                     </button>
+                   )}
+                   <button className="timer-btn-modern timer-stop" onClick={stopTimer}>
+                     <X size={18} />
+                   </button>
                 </div>
               </div>
             )}

@@ -11,10 +11,10 @@ const TabbedNavigation = ({ activeTab, setActiveTab }) => {
       title: 'Task Board - Manage your tasks'
     },
     {
-      id: 'report',
-      label: 'Reports',
+      id: 'reports',
+      label: 'Calendar',
       icon: BarChart3,
-      title: 'Analytics & Reports - View your productivity insights'
+      title: 'Calendar - View your productivity insights'
     },
     {
       id: 'settings',

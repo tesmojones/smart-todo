@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Check, X, Tag, Locate, Copy, Calendar, List } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Check, X, Tag, Locate, Copy, Calendar as CalendarIcon, List } from 'lucide-react';
 
-const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask, activeTab, setActiveTab, setSelectedDate }) => {
+const TaskCalendar = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask, activeTab, setActiveTab, setSelectedDate }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarData, setCalendarData] = useState({});
   const [showTaskInput, setShowTaskInput] = useState(false);
@@ -367,4 +367,4 @@ const TaskReport = ({ tasks, selectedHashtag, onClearHashtag, onCreateTask, acti
   );
 };
 
-export default TaskReport;
+export default TaskCalendar;

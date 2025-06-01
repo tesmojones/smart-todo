@@ -22,7 +22,7 @@ import {
   BarChart3,
   HelpCircle
 } from 'lucide-react';
-import TaskReport from './TaskReport';
+import TaskCalendar from './TaskCalendar';
 import Settings from './Settings';
 import TabbedNavigation from './TabbedNavigation';
 
@@ -671,9 +671,9 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
               ))}
             </div>
           </div>
-        ) : activeTab === 'report' ? (
+        ) : activeTab === 'reports' ? (
           <div className="task-report-container">
-            <TaskReport 
+            <TaskCalendar 
               tasks={tasks}
               selectedHashtag={selectedHashtag}
               onClearHashtag={onClearHashtag}
