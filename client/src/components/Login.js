@@ -1,5 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './Login.css';
+
+// Token management utilities
+const getToken = () => localStorage.getItem('jwt_token');
+const removeToken = () => localStorage.removeItem('jwt_token');
+
+// Axios interceptor to add token to requests
+axios.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 const Login = ({ onLogin }) => {
   const [user, setUser] = useState(null);
@@ -11,38 +25,62 @@ const Login = ({ onLogin }) => {
   }, []);
 
   const checkAuthStatus = async () => {
+    console.log('🔍 [DEBUG] Login component checkAuthStatus starting...');
+    const token = getToken();
+    console.log('🎫 [DEBUG] Login component token check:', {
+      hasToken: !!token,
+      tokenLength: token ? token.length : 0,
+      tokenPreview: token ? token.substring(0, 20) + '...' : 'None'
+    });
+    
     try {
-      const response = await fetch('http://127.0.0.1:5001/auth/user', {
-        credentials: 'include'
+      // Only check auth if we have a token
+      if (!token) {
+        console.log('🚫 [DEBUG] Login component: No token found, setting loading to false');
+        setLoading(false);
+        return;
+      }
+      
+      console.log('📡 [DEBUG] Login component: Making auth request...');
+      const response = await axios.get('http://127.0.0.1:5001/api/auth/user');
+      console.log('✅ [DEBUG] Login component: Auth request successful:', {
+        status: response.status,
+        userData: response.data.user,
+        hasUserData: !!response.data.user,
+        userKeys: response.data.user ? Object.keys(response.data.user) : 'N/A'
       });
       
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-        onLogin(data.user);
-      }
+      setUser(response.data.user);
+      console.log('🔑 [DEBUG] Login component: Calling onLogin with userData:', {
+        userData: response.data.user,
+        hasUserData: !!response.data.user
+      });
+      onLogin(response.data.user);
     } catch (error) {
-      console.error('Auth check failed:', error);
+      console.error('❌ [DEBUG] Login component: Auth check failed:', {
+        error: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data
+      });
+      console.log('🧹 [DEBUG] Login component: Removing invalid token');
+      removeToken(); // Clear invalid token
+      console.log('🔑 [DEBUG] Login component: Calling onLogin with null due to error');
+      onLogin(null);
     } finally {
+      console.log('🏁 [DEBUG] Login component: Setting loading to false');
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://127.0.0.1:5001/auth/google';
+    window.location.href = 'http://127.0.0.1:5001/api/auth/google';
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch('http://127.0.0.1:5001/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
-      setUser(null);
-      onLogin(null);
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+  const handleLogout = () => {
+    removeToken();
+    setUser(null);
+    onLogin(null);
   };
 
   if (loading) {

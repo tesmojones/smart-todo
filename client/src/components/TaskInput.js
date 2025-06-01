@@ -132,13 +132,26 @@ const TaskInput = ({ onCreateTask, isLoading, selectedDate }) => {
     }
   };
 
+  // Extract hashtags from input text and clean the text
+  const extractHashtags = (text) => {
+    if (!text) return { tags: [], cleanText: text };
+    const hashtagRegex = /#\w+/g;
+    const matches = text.match(hashtagRegex);
+    const tags = matches ? matches.map(tag => tag.substring(1).toLowerCase()) : []; // Remove '#' from tags
+    const cleanText = text.replace(hashtagRegex, '').replace(/\s+/g, ' ').trim(); // Remove hashtags and extra spaces
+    return { tags, cleanText };
+  };
+
   // AI-powered natural language processing simulation
   const processNaturalLanguageTask = async (input) => {
     // Simulate AI processing delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     let aiEnhancements = '';
-    let processedText = input;
+    
+    // Extract hashtags from input and get clean text
+    const { tags: extractedTags, cleanText } = extractHashtags(input);
+    let processedText = cleanText;
     
     // Simple AI enhancements simulation
     if (input.toLowerCase().includes('next week')) {
@@ -159,7 +172,13 @@ const TaskInput = ({ onCreateTask, isLoading, selectedDate }) => {
       aiEnhancements += aiEnhancements ? ', Priority: High' : 'Priority: High';
     }
     
-    return { text: processedText, aiEnhancements };
+    // Add hashtag info to AI enhancements if tags were found
+    if (extractedTags.length > 0) {
+      const tagInfo = `Tags: ${extractedTags.join(', ')}`;
+      aiEnhancements += aiEnhancements ? `, ${tagInfo}` : tagInfo;
+    }
+    
+    return { text: processedText, aiEnhancements, tags: extractedTags };
   };
 
   const suggestions = {

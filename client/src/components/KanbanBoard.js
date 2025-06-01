@@ -108,16 +108,7 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
     return priorityColors[priority] || '#6b7280';
   };
 
-  const getPriorityIcon = (priority) => {
-    switch (priority) {
-      case 'high': return AlertTriangle;
-      case 'medium': return AlertTriangle;
-      case 'low': return Circle;
-      default: return Circle;
-    }
-  };
 
-  const PriorityIcon = getPriorityIcon(task.priority);
 
   const isTaskDisabled = activeTimerTask && activeTimerTask.id !== task.id;
 
@@ -236,11 +227,6 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
         <div className="task-bottom-left">
           {task.priority && (
             <div className="priority-item">
-              <PriorityIcon 
-                className="priority-icon" 
-                size={14}
-                style={{ color: getPriorityColor(task.priority) }}
-              />
               <span 
                 className="priority-badge"
                 style={{
@@ -503,11 +489,19 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
 
   // Filter tasks by selected date using YYYYMMDD format (ignore timezone)
   const filterTasksByDate = (taskList) => {
+    console.log('🗓️ [DEBUG] filterTasksByDate called:', {
+      taskListLength: Array.isArray(taskList) ? taskList.length : 'not array',
+      taskList: taskList,
+      selectedDate: selectedDate
+    });
+    
     // Convert selected date to YYYYMMDD format
     const selectedYear = selectedDate.getFullYear();
     const selectedMonth = String(selectedDate.getMonth() + 1).padStart(2, '0');
     const selectedDay = String(selectedDate.getDate()).padStart(2, '0');
     const selectedDateStr = `${selectedYear}${selectedMonth}${selectedDay}`;
+    
+    console.log('🗓️ [DEBUG] Selected date string:', selectedDateStr);
 
     const filteredTasks = taskList.filter(task => {
       if (!task.createdAt) {
@@ -521,8 +515,22 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
       const taskDay = String(taskDate.getDate()).padStart(2, '0');
       const taskDateStr = `${taskYear}${taskMonth}${taskDay}`;
       const matches = taskDateStr === selectedDateStr;
+      console.log('🗓️ [DEBUG] Task date check:', {
+        taskTitle: task.title,
+        taskCreatedAt: task.createdAt,
+        taskDateStr: taskDateStr,
+        selectedDateStr: selectedDateStr,
+        matches: matches
+      });
       return matches;
     });
+    
+    console.log('🗓️ [DEBUG] Filtered tasks result:', {
+      originalCount: taskList.length,
+      filteredCount: filteredTasks.length,
+      filteredTasks: filteredTasks
+    });
+    
     return filteredTasks;
   };
 
@@ -568,18 +576,23 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
 
         const task = source.data.task;
         const newStatus = destination.data.columnId;
-        const dropIndex = destination.data.dropIndex || 0;
+        const dropIndex = destination.data.dropIndex !== undefined ? destination.data.dropIndex : 0;
 
-        // Calculate new position based on drop location
-        const tasksInColumn = tasksByStatus[newStatus] || [];
-        let newPosition = dropIndex;
+        // Get tasks in the target column
+        const tasksInTargetColumn = tasksByStatus[newStatus] || [];
         
-        // If moving within the same column, adjust for the task being moved
-        if (task.status === newStatus) {
-          const currentIndex = tasksInColumn.findIndex(t => t.id === task.id);
-          if (currentIndex < dropIndex) {
-            newPosition = dropIndex - 1;
-          }
+        // Calculate new position
+        let newPosition;
+        if (tasksInTargetColumn.length === 0) {
+          // Empty column
+          newPosition = 0;
+        } else if (dropIndex >= tasksInTargetColumn.length) {
+          // Dropped at the end
+          newPosition = tasksInTargetColumn[tasksInTargetColumn.length - 1].position + 1;
+        } else {
+          // Dropped in the middle
+          const targetTask = tasksInTargetColumn[dropIndex];
+          newPosition = targetTask.position;
         }
 
         // Update task with new status and position
