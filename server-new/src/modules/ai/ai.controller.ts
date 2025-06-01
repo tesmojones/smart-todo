@@ -2,7 +2,7 @@ import { Controller, Post, Get, Body, UseGuards, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AiService } from './ai.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { VoiceInputDto } from '../../common/dto/voice-input.dto';
+
 import { ITaskData, IRecommendation } from '../../common/interfaces/task.interface';
 
 @ApiTags('AI')
@@ -20,13 +20,7 @@ export class AiController {
     return this.aiService.parseTaskInput(input);
   }
 
-  @Post('voice-to-task')
-  @ApiOperation({ summary: 'Convert voice transcript to task data' })
-  @ApiResponse({ status: 200, description: 'Voice input processed successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid voice input' })
-  async voiceToTask(@Body() voiceInputDto: VoiceInputDto): Promise<ITaskData> {
-    return this.aiService.processVoiceInput(voiceInputDto.transcript);
-  }
+
 
   @Get('recommendations')
   @ApiOperation({ summary: 'Get AI-powered task recommendations' })

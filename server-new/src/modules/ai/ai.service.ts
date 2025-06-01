@@ -37,8 +37,5 @@ export class AiService {
     return this.recommendationService.generateRecommendations(userPatterns);
   }
 
-  processVoiceInput(transcript: string): ITaskData {
-    this.logger.log(`Processing voice input: ${transcript}`);
-    return this.naturalLanguageService.parseTask(transcript);
-  }
+
 }

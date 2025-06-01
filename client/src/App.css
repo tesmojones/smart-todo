@@ -71,78 +71,7 @@ body {
   gap: 1rem;
 }
 
-.voice-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
 
-.voice-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-.voice-btn.listening {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-.voice-transcript {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: rgba(102, 126, 234, 0.1);
-  border-radius: 12px;
-  border-left: 4px solid #667eea;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.transcript-label {
-  font-weight: 600;
-  color: #667eea;
-}
-
-.transcript-text {
-  flex: 1;
-  font-style: italic;
-  color: #555;
-}
-
-.process-voice-btn {
-  padding: 0.5rem 1rem;
-  background: #22c55e;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.process-voice-btn:hover {
-  background: #16a34a;
-}
-
-.process-voice-btn:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-}
 
 /* Navigation Styles */
 .app-nav {
@@ -3180,15 +3109,13 @@ body {
   
   .task-input-container,
   .task-list-container,
-  .recommendations-container,
-  .analytics-container {
+  .recommendations-container {
     padding: 1.5rem;
   }
   
   .input-header,
   .list-header,
-  .recommendations-header,
-  .analytics-header {
+  .recommendations-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
@@ -3241,10 +3168,7 @@ body {
 }
 
 @media (max-width: 480px) {
-  .voice-transcript {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+
   
   .examples-grid {
     grid-template-columns: 1fr;
@@ -3296,11 +3220,7 @@ body {
   gap: 20px;
 }
 
-.voice-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+
 
 /* Enhanced inline edit styles for smoother task editing */
 .enhanced-inline-edit {

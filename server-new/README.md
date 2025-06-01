@@ -7,9 +7,7 @@ A modern, scalable backend for the AI Todo application built with NestJS, TypeSc
 - **Authentication**: Google OAuth 2.0 integration with JWT tokens
 - **AI-Powered Task Processing**: Natural language task parsing with OpenAI integration
 - **Task Management**: Full CRUD operations with advanced features
-- **Analytics**: User task analytics and productivity insights
-- **Recommendations**: AI-powered task recommendations
-- **Voice Input**: Voice-to-task conversion
+- **Recommendations**: AI-powered task suggestions
 - **Database**: PostgreSQL with TypeORM
 - **API Documentation**: Swagger/OpenAPI integration
 - **Type Safety**: Full TypeScript implementation
@@ -108,13 +106,11 @@ A modern, scalable backend for the AI Todo application built with NestJS, TypeSc
 - `GET /api/tasks/:id` - Get a specific task
 - `PATCH /api/tasks/:id` - Update a task
 - `DELETE /api/tasks/:id` - Delete a task
-- `GET /api/tasks/analytics` - Get task analytics
 - `GET /api/tasks/recommendations` - Get AI recommendations
-- `POST /api/tasks/voice-to-task` - Convert voice to task
 
 ### AI
 - `POST /api/ai/parse-task` - Parse natural language to task
-- `POST /api/ai/voice-to-task` - Process voice input
+
 - `GET /api/ai/recommendations` - Get AI recommendations
 
 ### Users
@@ -164,8 +160,7 @@ The server can parse natural language input into structured task data:
 }
 ```
 
-### Voice Input
-Convert voice transcripts to tasks using the `/api/tasks/voice-to-task` endpoint.
+
 
 ### AI Recommendations
 Get personalized productivity recommendations based on user patterns and task history.

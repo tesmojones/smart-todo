@@ -1,6 +1,6 @@
 # AI Todo - Smart Task Management 🧠✅
 
-A cutting-edge todo application powered by artificial intelligence, featuring natural language processing, smart prioritization, personalized recommendations, and voice recognition.
+A cutting-edge todo application powered by artificial intelligence, featuring natural language processing, smart prioritization, and personalized recommendations.
 
 ## 🚀 Key AI Features
 
@@ -33,19 +33,13 @@ A cutting-edge todo application powered by artificial intelligence, featuring na
   - "Don't forget to meal prep for the week"
 - **How it works**: Analyzes past task creation patterns, completion rates, and timing
 
-### 4. Voice Recognition for Hands-Free Input
-- **What it does**: Add tasks using voice commands
-- **Benefits**: 
-  - Enhanced accessibility
-  - Perfect for mobile use
-  - Hands-free operation
-- **How it works**: Converts speech to text, then processes through NLP pipeline
+
 
 ## 🛠️ Technology Stack
 
 ### Frontend
 - **React 18** - Modern UI framework
-- **React Speech Recognition** - Voice input capabilities
+
 - **Lucide React** - Beautiful icons
 - **Date-fns** - Date manipulation
 - **Framer Motion** - Smooth animations
@@ -143,12 +137,13 @@ OPENAI_API_KEY=your_openai_key_here  # Optional for enhanced AI features
    - "Workout at gym #fitness #health"
    - "Buy groceries #shopping #weekly"
 
-### Using Voice Input
+## 📱 Mobile Experience
 
-1. Click the microphone button in the header
-2. Speak your task naturally
-3. The AI will process your speech and create the task
-4. Review and confirm the parsed information
+Optimized for mobile devices with:
+- **Touch-friendly interface**
+- **Responsive design**
+- **Offline capability**
+- **Fast loading times**
 
 
 
@@ -169,7 +164,7 @@ OPENAI_API_KEY=your_openai_key_here  # Optional for enhanced AI features
 - 🧠 Natural language task creation
 - 📊 Intelligent priority scoring
 - 💡 Personalized recommendations
-- 🎤 Voice recognition input
+
 - 📈 Pattern analysis and insights
 
 ### User Experience
@@ -187,12 +182,7 @@ The AI learns from your behavior:
 - Habit recognition (recurring tasks)
 - Context-aware recommendations
 
-### Voice Commands
-Supported voice patterns:
-- "Add task [description]"
-- "Remind me to [action] [when]"
-- "Create urgent task [description]"
-- "Schedule [task] for [time]"
+
 
 ### Natural Language Examples
 
@@ -230,7 +220,7 @@ aitodo/
 - `PUT /api/tasks/:id` - Update task
 - `DELETE /api/tasks/:id` - Delete task
 - `GET /api/recommendations` - Get AI recommendations
-- `POST /api/voice-to-task` - Process voice input
+
 
 ### Contributing
 
@@ -244,10 +234,7 @@ aitodo/
 
 ### Common Issues
 
-1. **Voice recognition not working**
-   - Ensure you're using HTTPS or localhost
-   - Check browser permissions for microphone access
-   - Try a different browser (Chrome recommended)
+
 
 2. **MongoDB connection issues**
    - The app will fall back to in-memory storage
@@ -265,7 +252,7 @@ aitodo/
 - ✅ Firefox
 - ✅ Safari
 - ✅ Edge
-- ⚠️ Voice recognition requires modern browser support
+
 
 ## 📝 License
 
@@ -291,7 +278,7 @@ This isn't just another todo app - it's a showcase of how AI can enhance everyda
 
 Perfect for developers wanting to learn about:
 - Natural Language Processing in web apps
-- Voice recognition implementation
+
 - AI-powered user experiences
 - Modern React development
 - Full-stack JavaScript applications

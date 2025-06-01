@@ -21,30 +21,6 @@ export interface ITaskData {
   isRepetitive?: boolean;
 }
 
-export interface ITaskAnalytics {
-  totalTasks: number;
-  completedTasks: number;
-  pendingTasks: number;
-  overdueCount: number;
-  completionRate: number;
-  tasksByPriority: {
-    low: number;
-    medium: number;
-    high: number;
-    urgent: number;
-  };
-  tasksByStatus: {
-    not_started: number;
-    in_progress: number;
-    completed: number;
-  };
-  productivityTrends?: {
-    date: string;
-    completed: number;
-    created: number;
-  }[];
-}
-
 export interface IUserPatterns {
   completionRate: number;
   overdueCount: number;

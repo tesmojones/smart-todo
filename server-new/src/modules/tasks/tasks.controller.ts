@@ -14,12 +14,12 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from '../../common/dto/create-task.dto';
 import { UpdateTaskDto } from '../../common/dto/update-task.dto';
-import { VoiceInputDto } from '../../common/dto/voice-input.dto';
+
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AiService } from '../ai/ai.service';
 import { Task } from '../../database/entities/task.entity';
-import { ITaskAnalytics, IRecommendation, ITaskData } from '../../common/interfaces/task.interface';
+import { IRecommendation, ITaskData } from '../../common/interfaces/task.interface';
 
 @ApiTags('Tasks')
 @Controller('api/tasks')
@@ -49,12 +49,7 @@ export class TasksController {
     return this.tasksService.findAll(userId);
   }
 
-  @Get('analytics')
-  @ApiOperation({ summary: 'Get task analytics for the current user' })
-  @ApiResponse({ status: 200, description: 'Analytics retrieved successfully' })
-  async getAnalytics(@CurrentUser('id') userId: string): Promise<ITaskAnalytics> {
-    return this.tasksService.getAnalytics(userId);
-  }
+
 
   @Get('recommendations')
   @ApiOperation({ summary: 'Get AI-powered task recommendations' })
@@ -65,13 +60,11 @@ export class TasksController {
     @Query('overdueCount') overdueCount?: number,
     @Query('totalTasks') totalTasks?: number,
   ): Promise<IRecommendation[]> {
-    const analytics = await this.tasksService.getAnalytics(userId);
-    
     const userPatterns = {
-      completionRate: completionRate ?? analytics.completionRate,
-      overdueCount: overdueCount ?? analytics.overdueCount,
-      totalTasks: totalTasks ?? analytics.totalTasks,
-      tasksByPriority: analytics.tasksByPriority,
+      completionRate: completionRate ?? 0,
+      overdueCount: overdueCount ?? 0,
+      totalTasks: totalTasks ?? 0,
+      tasksByPriority: { low: 0, medium: 0, high: 0, urgent: 0 },
       peakHours: [], // Could be calculated from task creation/completion times
       commonTags: [], // Could be extracted from user's tasks
     };
@@ -79,16 +72,7 @@ export class TasksController {
     return this.aiService.generateRecommendations(userPatterns);
   }
 
-  @Post('voice-to-task')
-  @ApiOperation({ summary: 'Convert voice input to a task' })
-  @ApiResponse({ status: 200, description: 'Voice input processed successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid voice input' })
-  async voiceToTask(
-    @Body() voiceInputDto: VoiceInputDto,
-    @CurrentUser('id') userId: string,
-  ): Promise<ITaskData> {
-    return this.aiService.processVoiceInput(voiceInputDto.transcript);
-  }
+
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a specific task' })

@@ -6,7 +6,7 @@ import { User } from '../../database/entities/user.entity';
 import { CreateTaskDto } from '../../common/dto/create-task.dto';
 import { UpdateTaskDto } from '../../common/dto/update-task.dto';
 import { AiService } from '../ai/ai.service';
-import { ITaskAnalytics, TaskStatus, TaskPriority } from '../../common/interfaces/task.interface';
+import { TaskStatus, TaskPriority } from '../../common/interfaces/task.interface';
 
 @Injectable()
 export class TasksService {
@@ -115,44 +115,7 @@ export class TasksService {
     this.logger.log(`Task ${id} deleted`);
   }
 
-  async getAnalytics(userId: string): Promise<ITaskAnalytics> {
-    const tasks = await this.findAll(userId);
-    const now = new Date();
 
-    const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(task => task.status === TaskStatus.COMPLETED).length;
-    const pendingTasks = totalTasks - completedTasks;
-    const overdueCount = tasks.filter(task => 
-      task.dueDate && task.dueDate < now && task.status !== TaskStatus.COMPLETED
-    ).length;
-
-    const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0;
-
-    const tasksByPriority = {
-      low: tasks.filter(task => task.priority === TaskPriority.LOW).length,
-      medium: tasks.filter(task => task.priority === TaskPriority.MEDIUM).length,
-      high: tasks.filter(task => task.priority === TaskPriority.HIGH).length,
-      urgent: tasks.filter(task => task.priority === TaskPriority.URGENT).length,
-    };
-
-    const tasksByStatus = {
-      not_started: tasks.filter(task => task.status === TaskStatus.NOT_STARTED).length,
-      in_progress: tasks.filter(task => task.status === TaskStatus.IN_PROGRESS).length,
-      completed: tasks.filter(task => task.status === TaskStatus.COMPLETED).length,
-    };
-
-    // Average completion time calculation removed since completedAt field was removed
-
-    return {
-      totalTasks,
-      completedTasks,
-      pendingTasks,
-      overdueCount,
-      completionRate,
-      tasksByPriority,
-      tasksByStatus,
-    };
-  }
 
   private async getNextPosition(userId: string): Promise<number> {
     const lastTask = await this.taskRepository.findOne({

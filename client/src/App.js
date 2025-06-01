@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import { Mic, MicOff, Brain } from 'lucide-react';
+import { Brain } from 'lucide-react';
 import KanbanBoard from './components/KanbanBoard';
 import TaskInput from './components/TaskInput';
 import Login from './components/Login';
@@ -62,12 +61,7 @@ function App() {
     });
   }, [authLoading]);
   
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition
-  } = useSpeechRecognition();
+
 
   // Check authentication status
   const checkAuth = async () => {
@@ -207,29 +201,7 @@ function App() {
     }
   }, []);
 
-  // Handle voice input
-  const handleVoiceInput = async () => {
-    if (!transcript) return;
-    
-    setIsLoading(true);
-    try {
-      const response = await axios.post(`${API_BASE}/voice-to-task`, {
-        transcript: transcript
-      });
-      
-      if (response.data.success) {
-        // Create task from voice input
-        await createTask(response.data.taskData.title, {
-          input: transcript,
-          ...response.data.taskData
-        });
-        resetTranscript();
-      }
-    } catch (error) {
-      console.error('Error processing voice input:', error);
-    }
-    setIsLoading(false);
-  };
+
 
   // Create new task
   const createTask = async (input, additionalData = {}) => {
@@ -327,22 +299,9 @@ function App() {
 
 
 
-  // Start/stop voice recognition
-  const toggleListening = () => {
-    if (listening) {
-      SpeechRecognition.stopListening();
-      if (transcript) {
-        handleVoiceInput();
-      }
-    } else {
-      resetTranscript();
-      SpeechRecognition.startListening({ continuous: true });
-    }
-  };
 
-  if (!browserSupportsSpeechRecognition) {
-    console.warn('Browser does not support speech recognition.');
-  }
+
+
 
   // Show loading while checking authentication
   if (authLoading) {
@@ -387,43 +346,12 @@ function App() {
           </div>
           
           <div className="header-right">
-            <div className="voice-controls">
-              {browserSupportsSpeechRecognition ? (
-                <>
-                  <button 
-                    className={`voice-btn ${listening ? 'listening' : ''}`}
-                    onClick={listening ? SpeechRecognition.stopListening : SpeechRecognition.startListening}
-                    disabled={isLoading}
-                  >
-                    {listening ? <MicOff size={20} /> : <Mic size={20} />}
-                    {listening ? 'Stop' : 'Voice'}
-                  </button>
-                </>
-              ) : (
-                <span className="voice-not-supported">Voice not supported</span>
-              )}
-            </div>
-            
             {/* User info */}
             <Login onLogin={handleLogin} />
           </div>
         </div>
         
-        {transcript && (
-          <div className="voice-transcript">
-            <span className="transcript-label">Voice Input:</span>
-            <span className="transcript-text">"{transcript}"</span>
-            {!listening && (
-              <button 
-                className="process-voice-btn"
-                onClick={handleVoiceInput}
-                disabled={isLoading}
-              >
-                {isLoading ? 'Processing...' : 'Add Task'}
-              </button>
-            )}
-          </div>
-        )}
+
       </header>
 
       <main className="app-main">
