@@ -375,10 +375,10 @@ function App() {
     }
   };
 
-  // Handle hashtag click - navigate to report and filter by hashtag
+  // Handle hashtag click - navigate to calendar and filter by hashtag
   const handleHashtagClick = (hashtag) => {
     setSelectedHashtag(hashtag);
-    setActiveTab('report');
+    setActiveTab('reports');
   };
 
 
