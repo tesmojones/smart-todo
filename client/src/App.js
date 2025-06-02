@@ -50,10 +50,49 @@ function App() {
     });
   }, [user]);
 
+  // Function to play tick sound
+  const playTickSound = () => {
+    try {
+      // Create audio context for classic clock tick sound
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      const filterNode = audioContext.createBiquadFilter();
+      
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Configure classic clock tick - sharp, high-pitched click
+      oscillator.frequency.setValueAtTime(3000, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.01);
+      oscillator.type = 'square';
+      
+      // High-pass filter for crisp tick sound
+      filterNode.type = 'highpass';
+      filterNode.frequency.setValueAtTime(1000, audioContext.currentTime);
+      filterNode.Q.setValueAtTime(5, audioContext.currentTime);
+      
+      // Very sharp attack and immediate decay for classic "tik" sound
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + 0.001);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.02);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.02);
+    } catch (error) {
+      // Silently fail if audio context is not supported
+      console.log('Audio not supported:', error);
+    }
+  };
+
   // Timer countdown effect
   useEffect(() => {
     if (isTimerRunning && timeRemaining > 0) {
       const interval = setInterval(() => {
+        // Play tick sound when timer is running
+        playTickSound();
+        
         setTimeRemaining(prev => {
           if (prev <= 1) {
             setIsTimerRunning(false);
