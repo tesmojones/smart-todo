@@ -44,6 +44,21 @@ body {
   gap: 24px;
 }
 
+.header-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.header-center .timer-content-header {
+  pointer-events: auto;
+}
+
 .logo {
   display: flex;
   align-items: center;

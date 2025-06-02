@@ -434,10 +434,8 @@ function App() {
             </div>
           </div>
           
-          <div className="header-right">
-            {/* Tabbed Navigation */}
-            <TabbedNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-            {/* Active Timer Display */}
+          {/* Centered Timer Display */}
+          <div className="header-center">
             {activeTimerTask && (
               <div className="timer-content-header">
                 <div className="timer-main-display">
@@ -466,6 +464,11 @@ function App() {
                 </div>
               </div>
             )}
+          </div>
+          
+          <div className="header-right">
+            {/* Tabbed Navigation */}
+            <TabbedNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
             <Login onLogin={handleLogin} />
           </div>
         </div>
