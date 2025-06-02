@@ -90,8 +90,10 @@ function App() {
   useEffect(() => {
     if (isTimerRunning && timeRemaining > 0) {
       const interval = setInterval(() => {
-        // Play tick sound when timer is running
-        playTickSound();
+        // Play tick sound only in the last minute (60 seconds)
+        if (timeRemaining <= 60) {
+          playTickSound();
+        }
         
         setTimeRemaining(prev => {
           if (prev <= 1) {
