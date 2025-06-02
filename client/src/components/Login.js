@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { Settings, LogOut } from 'lucide-react';
 import './Login.css';
 
 // Token management utilities
@@ -95,15 +96,7 @@ const Login = ({ onLogin }) => {
   }
 
   if (user) {
-    return (
-      <div className="user-info">
-        <img src={user.picture} alt={user.name} className="user-avatar" />
-        <span className="user-name">{user.name}</span>
-        <button onClick={handleLogout} className="logout-btn">
-          Logout
-        </button>
-      </div>
-    );
+    return <UserDropdown user={user} onLogout={handleLogout} />;
   }
 
   return (
@@ -130,6 +123,73 @@ const Login = ({ onLogin }) => {
           <p>Secure authentication powered by Google</p>
         </div>
       </div>
+    </div>
+  );
+};
+
+const UserDropdown = ({ user, onLogout }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleSettingsClick = () => {
+    setIsOpen(false);
+    // Trigger settings tab - we'll need to pass this up to App
+    const event = new CustomEvent('openSettings');
+    window.dispatchEvent(event);
+  };
+
+  const handleLogoutClick = () => {
+    setIsOpen(false);
+    onLogout();
+  };
+
+  return (
+    <div className="user-dropdown" ref={dropdownRef}>
+      <button 
+        className="user-dropdown-trigger"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <img src={user.picture} alt={user.name} className="user-avatar" />
+      </button>
+      
+      {isOpen && (
+        <div className="user-dropdown-menu">
+          <div className="dropdown-header">
+            <img src={user.picture} alt={user.name} className="dropdown-avatar" />
+            <div className="dropdown-user-info">
+              <div className="dropdown-user-name">{user.name}</div>
+              <div className="dropdown-user-email">{user.email}</div>
+            </div>
+          </div>
+          
+          <div className="dropdown-divider"></div>
+          
+          <button className="dropdown-item" onClick={handleSettingsClick}>
+            <Settings size={16} />
+            <span>Settings</span>
+          </button>
+          
+          <div className="dropdown-divider"></div>
+          
+          <button className="dropdown-item logout-item" onClick={handleLogoutClick}>
+            <LogOut size={16} />
+            <span>Sign Out</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

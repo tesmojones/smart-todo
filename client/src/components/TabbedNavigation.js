@@ -1,5 +1,5 @@
 import React from 'react';
-import { Kanban, BarChart3, Settings as SettingsIcon } from 'lucide-react';
+import { Kanban, BarChart3 } from 'lucide-react';
 import './TabbedNavigation.css';
 
 const TabbedNavigation = ({ activeTab, setActiveTab }) => {
@@ -15,12 +15,6 @@ const TabbedNavigation = ({ activeTab, setActiveTab }) => {
       label: 'Calendar',
       icon: BarChart3,
       title: 'Calendar - View your productivity insights'
-    },
-    {
-      id: 'settings',
-      label: 'Settings',
-      icon: SettingsIcon,
-      title: 'Settings - Configure your preferences'
     }
   ];
 

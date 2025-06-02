@@ -5,6 +5,8 @@ import KanbanBoard from './components/KanbanBoard';
 import TaskInput from './components/TaskInput';
 import Login from './components/Login';
 import TaskCalendar from './components/TaskCalendar';
+import Settings from './components/Settings';
+import TabbedNavigation from './components/TabbedNavigation';
 import './App.css';
 
 const API_BASE = 'http://127.0.0.1:5001/api';
@@ -33,6 +35,7 @@ function App() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [timerInterval, setTimerInterval] = useState(null);
   const [activeTab, setActiveTab] = useState('tasks');
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [selectedHashtag, setSelectedHashtag] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   
@@ -103,6 +106,18 @@ function App() {
       timestamp: new Date().toISOString()
     });
   }, [authLoading]);
+
+  // Listen for settings open event from dropdown
+  useEffect(() => {
+    const handleOpenSettings = () => {
+      setShowSettingsModal(true);
+    };
+
+    window.addEventListener('openSettings', handleOpenSettings);
+    return () => {
+      window.removeEventListener('openSettings', handleOpenSettings);
+    };
+  }, []);
   
 
 
@@ -420,6 +435,8 @@ function App() {
           </div>
           
           <div className="header-right">
+            {/* Tabbed Navigation */}
+            <TabbedNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
             {/* Active Timer Display */}
             {activeTimerTask && (
               <div className="timer-content-header">
@@ -455,27 +472,27 @@ function App() {
       </header>
 
       <main className="app-main">
-        <div className="kanban-wrapper">
-          <KanbanBoard 
-            tasks={tasks}
-            onUpdateTask={updateTask}
-            onDeleteTask={deleteTask}
-            onHashtagClick={handleHashtagClick}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            selectedHashtag={selectedHashtag}
-            onClearHashtag={() => setSelectedHashtag(null)}
-            onCreateTask={createTaskWithDate}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            activeTimerTask={activeTimerTask}
-            setActiveTimerTask={setActiveTimerTask}
-            timeRemaining={timeRemaining}
-            setTimeRemaining={setTimeRemaining}
-            isTimerRunning={isTimerRunning}
-            setIsTimerRunning={setIsTimerRunning}
-          />
-        </div>
+        <KanbanBoard 
+          tasks={tasks}
+          onUpdateTask={updateTask}
+          onDeleteTask={deleteTask}
+          onHashtagClick={handleHashtagClick}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          selectedHashtag={selectedHashtag}
+          onClearHashtag={() => setSelectedHashtag(null)}
+          onCreateTask={createTaskWithDate}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          activeTimerTask={activeTimerTask}
+          setActiveTimerTask={setActiveTimerTask}
+          timeRemaining={timeRemaining}
+          setTimeRemaining={setTimeRemaining}
+          isTimerRunning={isTimerRunning}
+          setIsTimerRunning={setIsTimerRunning}
+          user={user}
+          onLogout={() => handleLogin(null)}
+        />
       </main>
 
       <footer className="app-footer">
@@ -488,6 +505,33 @@ function App() {
         selectedDate={selectedDate}
         isLoading={isLoading}
       />
+
+      {/* Settings Modal */}
+      {showSettingsModal && (
+        <div className="modal-overlay" onClick={() => setShowSettingsModal(false)}>
+          <div className="modal-content settings-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Settings</h2>
+              <button 
+                className="modal-close-btn"
+                onClick={() => setShowSettingsModal(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <Settings 
+                user={user}
+                onUpdateUser={() => {}}
+                onLogout={() => {
+                  handleLogin(null);
+                  setShowSettingsModal(false);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,27 +4,20 @@ import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { 
   Calendar, 
-  Tag, 
   Save, 
   X,
-  AlertTriangle,
   CheckCircle2,
   Circle,
   Play,
   Pause,
   ChevronLeft,
   ChevronRight,
-  Kanban,
   MoreVertical,
   Trash2,
-  Locate,
-  Settings as SettingsIcon,
-  BarChart3,
-  HelpCircle
+  Locate
 } from 'lucide-react';
 import TaskCalendar from './TaskCalendar';
-import Settings from './Settings';
-import TabbedNavigation from './TabbedNavigation';
+
 
 
 const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, activeTimerTask, isTimerRunning, onStartTimer, onPauseTimer, onResumeTimer }) => {
@@ -405,7 +398,7 @@ const KanbanColumn = ({ column, tasks, onUpdateTask, onDeleteTask, onHashtagClic
   );
 };
 
-const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCreateTask, onCreateTaskRegular, activeTab, setActiveTab, selectedHashtag, onClearHashtag, selectedDate, setSelectedDate, activeTimerTask, setActiveTimerTask, timeRemaining, setTimeRemaining, isTimerRunning, setIsTimerRunning }) => {
+const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCreateTask, onCreateTaskRegular, activeTab, setActiveTab, selectedHashtag, onClearHashtag, selectedDate, setSelectedDate, activeTimerTask, setActiveTimerTask, timeRemaining, setTimeRemaining, isTimerRunning, setIsTimerRunning, user, onLogout }) => {
   const [editingTask, setEditingTask] = useState(null);
   const [editTitle, setEditTitle] = useState('');
 
@@ -453,11 +446,7 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
     setIsTimerRunning(true);
   };
 
-  const stopTimer = () => {
-    setActiveTimerTask(null);
-    setIsTimerRunning(false);
-    setTimeRemaining(25 * 60);
-  };
+
 
 
 
@@ -612,9 +601,6 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
     <div className="kanban-container">
 
 
-      {/* Tabbed Navigation */}
-      <TabbedNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-      
       <div className="content-area">
         {/* Content Area - Kanban Board or Task Report */}
         {activeTab === 'tasks' ? (
@@ -681,13 +667,6 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               setSelectedDate={setSelectedDate}
-            />
-          </div>
-        ) : activeTab === 'settings' ? (
-          <div className="settings-container-wrapper">
-            <Settings 
-              user={null}
-              onUpdateUser={() => {}}
             />
           </div>
         ) : null}

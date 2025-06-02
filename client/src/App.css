@@ -24,14 +24,14 @@ body {
 
 /* Header Styles */
 .app-header {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.03), rgba(147, 51, 234, 0.03));
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-  padding: 1.5rem 2rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e4e6ea;
+  padding: 0 16px;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 32px rgba(59, 130, 246, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 75px;
 }
 
 .header-content {
@@ -40,12 +40,20 @@ body {
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
+  height: 100%;
+  gap: 24px;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.8;
 }
 
 .logo-icon-wrapper {
@@ -53,110 +61,163 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+  width: 40px;
+  height: 40px;
+  background: #1877f2;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.logo:hover .logo-icon-wrapper {
+  transform: scale(1.05);
 }
 
 .logo-icon {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 20px;
+  height: 20px;
   color: white;
-  z-index: 2;
 }
 
 .logo-accent {
   position: absolute;
   top: -2px;
   right: -2px;
-  width: 0.875rem;
-  height: 0.875rem;
-  color: #fbbf24;
-  filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.3));
-  z-index: 3;
+  width: 12px;
+  height: 12px;
+  color: #42b883;
+  background: white;
+  border-radius: 50%;
+  padding: 1px;
 }
 
 .logo-text {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: 0;
 }
 
 .logo h1 {
-  font-size: 1.875rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #1e40af, #7c3aed);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1877f2;
   margin: 0;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
+  line-height: 1;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 .tagline {
-  font-size: 0.75rem;
-  color: #64748b;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 11px;
+  color: #65676b;
+  font-weight: 400;
   margin: 0;
+  line-height: 1;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 .header-actions {
   display: flex;
-  gap: 1rem;
+  gap: 8px;
+  align-items: center;
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 16px;
+  height: 100%;
+  flex-direction: row;
 }
 
 /* Responsive Header */
 @media (max-width: 768px) {
   .app-header {
-    padding: 1rem 1.5rem;
+    padding: 0 12px;
+    height: 48px;
   }
   
-  .logo h1 {
-    font-size: 1.5rem;
+  .logo-text {
+    display: none;
   }
   
   .logo-icon-wrapper {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 32px;
+    height: 32px;
   }
   
   .logo-icon {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 16px;
+    height: 16px;
   }
   
   .logo-accent {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 10px;
+    height: 10px;
+    top: -1px;
+    right: -1px;
   }
   
-  .tagline {
-    font-size: 0.625rem;
+  .timer-content-header {
+    padding: 6px 12px;
+    gap: 8px;
+  }
+  
+  .timer-countdown-large {
+    font-size: 14px;
+    min-width: 50px;
+  }
+  
+  .timer-task-title-large {
+    font-size: 12px;
+    max-width: 120px;
+  }
+  
+  .timer-btn-modern {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .header-right {
+    gap: 8px;
   }
 }
 
 @media (max-width: 480px) {
   .app-header {
-    padding: 0.875rem 1rem;
+    padding: 0 8px;
+    height: 44px;
   }
   
   .logo {
-    gap: 0.75rem;
+    gap: 6px;
   }
   
-  .logo h1 {
-    font-size: 1.25rem;
+  .logo-icon-wrapper {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .logo-icon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .timer-content-header {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+  
+  .timer-countdown-large {
+    font-size: 12px;
+    min-width: 40px;
+  }
+  
+  .timer-btn-modern {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .header-right {
+    gap: 6px;
   }
   
   .tagline {
@@ -224,8 +285,6 @@ body {
 /* Main Content */
 .app-main {
   flex: 1;
-  padding: 2rem;
-  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
@@ -1831,63 +1890,65 @@ body {
 .timer-content-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 2rem;
+  background: #f0f2f5;
+  border-radius: 20px;
+  padding: 8px 16px;
+  gap: 12px;
+  border: 1px solid #e4e6ea;
 }
 
 .timer-main-display {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 12px;
   flex: 1;
 }
 
 .timer-countdown-large {
-  font-size: 2.25rem;
-  font-weight: 800;
-  color: #1f2937;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1c1e21;
   line-height: 1;
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-  letter-spacing: -0.02em;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-width: 120px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  min-width: 60px;
 }
 
 .timer-task-info {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 2px;
   flex: 1;
+  min-width: 0;
 }
 
 .timer-task-title-large {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1f2937;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1c1e21;
   line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 250px;
+  max-width: 180px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 .timer-status-indicator {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 4px;
 }
 
 .timer-status-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .timer-status-dot.running {
-  background: #10b981;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  background: #42b883;
+  box-shadow: 0 0 0 1px rgba(66, 184, 131, 0.3);
   animation: pulse 2s infinite;
 }
 
@@ -1906,55 +1967,54 @@ body {
 }
 
 .timer-status-text {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 12px;
+  font-weight: 400;
+  color: #65676b;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 .timer-controls-modern {
   display: flex;
-  gap: 0.75rem;
+  gap: 4px;
   align-items: center;
 }
 
 .timer-btn-modern {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: none;
-  border-radius: 10px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.15s ease;
+  background: #e4e6ea;
+  color: #1c1e21;
 }
 
 .timer-btn-modern.timer-play,
 .timer-btn-modern.timer-pause {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: #42b883;
   color: white;
 }
 
 .timer-btn-modern.timer-stop {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+  background: #e41e3f;
   color: white;
 }
 
 .timer-btn-modern:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
 }
 
 .timer-btn-modern.timer-play:hover,
 .timer-btn-modern.timer-pause:hover {
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+  background: #369870;
 }
 
 .timer-btn-modern.timer-stop:hover {
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  background: #c41e3a;
 }
 
 .timer-pause-btn,
@@ -3785,6 +3845,91 @@ body {
   }
 }
 
+/* Logout Settings Styles */
+.logout-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.user-info-section {
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.current-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar-large {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+}
+
+.user-details h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-details p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.logout-section {
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.logout-description {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.logout-btn-settings {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn-settings:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+.logout-btn-settings:active {
+  transform: translateY(0);
+}
+
+.logout-icon {
+  width: 16px;
+  height: 16px;
+}
+
 /* Responsive Design for Settings */
 @media (max-width: 768px) {
   .settings-content {
@@ -3808,5 +3953,167 @@ body {
   .settings-container {
     padding: 1rem;
     margin: 0.5rem;
+  }
+  
+  .current-user {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .user-avatar-large {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .logout-content {
+    gap: 1.5rem;
+  }
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.settings-modal {
+  width: 800px;
+  height: 600px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e9ecef;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.modal-close-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.modal-body {
+  padding: 0;
+  height: calc(600px - 81px); /* Total height minus header */
+  overflow: hidden;
+}
+
+.modal-body .settings-container {
+  height: 100%;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+}
+
+.modal-body .settings-content {
+  height: 100%;
+}
+
+.modal-body .settings-main {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+  .settings-modal {
+    width: 95vw;
+    height: 85vh;
+    margin: 0 10px;
+  }
+  
+  .modal-header {
+    padding: 16px 20px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .modal-body {
+    height: calc(85vh - 73px);
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-modal {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+  
+  .modal-overlay {
+    padding: 0;
+  }
+  
+  .modal-body {
+    height: calc(100vh - 73px);
   }
 }

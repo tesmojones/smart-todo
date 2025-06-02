@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, User, Bell, Palette, Database, Shield, Info } from 'lucide-react';
+import { Settings as SettingsIcon, User, Bell, Palette, Database, Shield, Info, LogOut } from 'lucide-react';
 
-const Settings = ({ user, onUpdateUser }) => {
+const Settings = ({ user, onUpdateUser, onLogout }) => {
   const [activeSection, setActiveSection] = useState('profile');
   const [settings, setSettings] = useState({
     profile: {
@@ -61,6 +61,7 @@ const Settings = ({ user, onUpdateUser }) => {
     { id: 'appearance', label: 'Appearance', icon: Palette },
     { id: 'privacy', label: 'Privacy', icon: Shield },
     { id: 'about', label: 'About', icon: Info },
+    { id: 'logout', label: 'Logout', icon: LogOut },
   ];
 
   const renderProfileSettings = () => (
@@ -244,28 +245,61 @@ const Settings = ({ user, onUpdateUser }) => {
 
   const renderAboutSettings = () => (
     <div className="settings-section">
-      <h3>About Tesmo Todo</h3>
-      <div className="about-info">
+      <h3>About</h3>
+      <div className="about-content">
         <div className="about-item">
           <strong>Version:</strong> 1.0.0
         </div>
         <div className="about-item">
-          <strong>Last Updated:</strong> {new Date().toLocaleDateString()}
+          <strong>Build:</strong> 2024.01.15
         </div>
         <div className="about-item">
-          <strong>Support:</strong> support@aitodo.com
+          <strong>Developer:</strong> Tesmo Team
+        </div>
+        <div className="about-item">
+          <strong>License:</strong> MIT
+        </div>
+        <div className="about-item">
+          <strong>Support:</strong> support@tesmo.com
         </div>
         <div className="about-item">
           <strong>Documentation:</strong> 
-          <a href="#" className="about-link">View Documentation</a>
+          <a href="#" className="about-link">View Docs</a>
         </div>
         <div className="about-item">
           <strong>Privacy Policy:</strong> 
-          <a href="#" className="about-link">Read Privacy Policy</a>
+          <a href="#" className="about-link">Read Policy</a>
         </div>
-        <div className="about-item">
-          <strong>Terms of Service:</strong> 
-          <a href="#" className="about-link">Read Terms</a>
+      </div>
+    </div>
+  );
+
+  const renderLogoutSettings = () => (
+    <div className="settings-section">
+      <h3>Account</h3>
+      <div className="logout-content">
+        <div className="user-info-section">
+          {user && (
+            <div className="current-user">
+              <img src={user.picture} alt={user.name} className="user-avatar-large" />
+              <div className="user-details">
+                <h4>{user.name}</h4>
+                <p>{user.email}</p>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="logout-section">
+          <p className="logout-description">
+            Sign out of your account. You'll need to sign in again to access your tasks.
+          </p>
+          <button 
+            className="logout-btn-settings"
+            onClick={onLogout}
+          >
+            <LogOut className="logout-icon" />
+            Sign Out
+          </button>
         </div>
       </div>
     </div>
@@ -283,6 +317,8 @@ const Settings = ({ user, onUpdateUser }) => {
         return renderPrivacySettings();
       case 'about':
         return renderAboutSettings();
+      case 'logout':
+        return renderLogoutSettings();
       default:
         return renderProfileSettings();
     }
@@ -322,7 +358,7 @@ const Settings = ({ user, onUpdateUser }) => {
         <div className="settings-main">
           {renderActiveSection()}
           
-          {activeSection !== 'about' && (
+          {activeSection !== 'about' && activeSection !== 'logout' && (
             <div className="settings-actions">
               <button 
                 className="save-btn"
