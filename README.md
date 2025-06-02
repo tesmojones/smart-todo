@@ -1,69 +1,66 @@
 # AI Todo - Smart Task Management 🧠✅
 
-A cutting-edge todo application powered by artificial intelligence, featuring natural language processing, smart prioritization, and personalized recommendations.
+A modern, AI-powered task management application featuring intelligent task processing, Google OAuth authentication, and a beautiful drag-and-drop interface.
 
-## 🚀 Key AI Features
+## 🚀 Key Features
 
-### 1. Natural Language Processing (NLP) for Task Creation
-- **What it does**: Allows users to add tasks using everyday language
-- **Examples**: 
-  - "Buy groceries tomorrow at 5 PM"
-  - "Call mom this weekend - important"
-  - "Finish project report by Friday urgent"
-- **How it works**: Uses advanced NLP models to parse natural language and extract:
-  - Task title
-  - Due dates and times
-  - Priority levels
-  - Tags and categories
+### 🎯 Task Management
+- **Kanban Board**: Drag-and-drop interface with three columns (Not Started, In Progress, Completed)
+- **Calendar View**: Visual calendar with task scheduling and date-based organization
+- **Smart Task Input**: AI-powered natural language processing for task creation
+- **Task Timer**: Built-in Pomodoro timer with task-specific tracking
+- **Hashtag System**: Organize tasks with clickable hashtags for easy filtering
 
-### 2. Smart Prioritization
-- **What it does**: AI automatically calculates priority scores for tasks
-- **Factors considered**:
-  - Due date proximity
-  - Urgency keywords ("urgent", "asap", "critical")
-  - User-defined priority levels
-  - Historical completion patterns
-- **Result**: Tasks are automatically sorted by AI-calculated importance
+### 🤖 AI-Powered Features
+- **Natural Language Processing**: Create tasks using everyday language
+- **Smart Priority Detection**: AI automatically detects and assigns priority levels
+- **Date Extraction**: Intelligent parsing of due dates from natural language
+- **Task Enhancement**: AI suggestions for improving task descriptions
 
-### 3. Personalized Task Recommendations
-- **What it does**: Suggests tasks based on user patterns and habits
-- **Examples**:
-  - "You often add a workout on Mondays—add one now?"
-  - "Time for your weekly review"
-  - "Don't forget to meal prep for the week"
-- **How it works**: Analyzes past task creation patterns, completion rates, and timing
+### 🔐 Authentication & Security
+- **Google OAuth 2.0**: Secure authentication with Google accounts
+- **JWT Tokens**: Stateless authentication with automatic token management
+- **User Profiles**: Personalized experience with user avatars and settings
 
-
+### 🎨 Modern UI/UX
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Beautiful Animations**: Smooth transitions and micro-interactions
+- **Tabbed Navigation**: Easy switching between Tasks and Calendar views
+- **Header Integration**: Compact timer and navigation in the app header
+- **Settings Modal**: Comprehensive user preferences and account management
 
 ## 🛠️ Technology Stack
 
 ### Frontend
-- **React 18** - Modern UI framework
-
-- **Lucide React** - Beautiful icons
-- **Date-fns** - Date manipulation
-- **Framer Motion** - Smooth animations
-- **Axios** - API communication
+- **React 18** - Modern UI framework with hooks
+- **Lucide React** - Beautiful, consistent icons
+- **Atlaskit Pragmatic Drag and Drop** - Smooth drag-and-drop functionality
+- **Axios** - HTTP client for API communication
+- **Date-fns** - Modern date manipulation library
+- **Framer Motion** - Smooth animations and transitions
 
 ### Backend
-- **Node.js & Express** - Server framework
-- **MongoDB** - Database (with in-memory fallback)
-- **Natural.js** - Natural language processing
-- **Compromise.js** - Text analysis
-- **Chrono-node** - Date/time parsing
-- **Moment.js** - Date handling
+- **NestJS** - Progressive Node.js framework with TypeScript
+- **TypeScript** - Type-safe development
+- **PostgreSQL** - Robust relational database
+- **TypeORM** - Object-relational mapping with decorators
+- **Passport.js** - Authentication middleware
+- **JWT** - JSON Web Tokens for stateless auth
+- **Swagger/OpenAPI** - API documentation
 
 ### AI & NLP Libraries
-- **Natural** - Tokenization, stemming, classification
-- **Compromise** - Natural language understanding
-- **Chrono-node** - Smart date/time extraction
+- **OpenAI API** - Advanced language processing
+- **Natural.js** - Natural language processing toolkit
+- **Compromise.js** - Natural language understanding
+- **Moment.js** - Date parsing and manipulation
 
 ## 📦 Installation & Setup
 
 ### Prerequisites
 - Node.js (v16 or higher)
 - npm or yarn
-- MongoDB (optional - app works with in-memory storage)
+- PostgreSQL database
+- Google OAuth credentials
 
 ### Quick Start
 
@@ -73,215 +70,235 @@ A cutting-edge todo application powered by artificial intelligence, featuring na
    cd aitodo
    ```
 
-2. **Install all dependencies**
+2. **Install dependencies**
    ```bash
-   npm run install-all
-   ```
-
-3. **Start the development servers**
-   ```bash
-   npm run dev
-   ```
-
-   This will start:
-   - Backend server on `http://localhost:5000`
-   - Frontend development server on `http://localhost:3000`
-
-### Manual Setup
-
-If you prefer to set up each part separately:
-
-1. **Backend Setup**
-   ```bash
-   cd server
-   npm install
-   npm run dev
-   ```
-
-2. **Frontend Setup**
-   ```bash
+   # Install client dependencies
    cd client
    npm install
+   
+   # Install server dependencies
+   cd ../server-new
+   npm install
+   ```
+
+3. **Set up environment variables**
+   
+   Create `.env` file in `server-new` directory:
+   ```env
+   # Database
+   DATABASE_HOST=localhost
+   DATABASE_PORT=5432
+   DATABASE_USERNAME=your_db_user
+   DATABASE_PASSWORD=your_db_password
+   DATABASE_NAME=aitodo
+   
+   # JWT
+   JWT_SECRET=your_jwt_secret_key
+   
+   # Google OAuth
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   
+   # OpenAI (optional)
+   OPENAI_API_KEY=your_openai_api_key
+   
+   # Server
+   PORT=5001
+   ```
+
+4. **Set up the database**
+   ```bash
+   # Run database migrations
+   cd server-new
+   npm run migration:run
+   ```
+
+5. **Start the development servers**
+   ```bash
+   # Start backend server (from server-new directory)
+   npm run start:dev
+   
+   # Start frontend server (from client directory)
+   cd ../client
    npm start
    ```
 
-### Environment Variables (Optional)
-
-Create a `.env` file in the `server` directory:
-
-```env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/aitodo
-OPENAI_API_KEY=your_openai_key_here  # Optional for enhanced AI features
-```
+   The application will be available at:
+   - Frontend: `http://localhost:3000`
+   - Backend API: `http://localhost:5001`
+   - API Documentation: `http://localhost:5001/api/docs`
 
 ## 🎯 How to Use
 
-### Adding Tasks with Natural Language
+### Getting Started
+1. **Sign in** with your Google account
+2. **Create tasks** using the floating "+" button
+3. **Switch views** between Tasks (Kanban) and Calendar using the header tabs
+4. **Drag and drop** tasks between columns to update their status
+5. **Start timers** on tasks for focused work sessions
 
-1. **Simple tasks**:
-   - "Buy milk"
-   - "Call dentist"
+### Task Creation Examples
 
-2. **Tasks with dates**:
-   - "Meeting with John tomorrow at 3 PM"
-   - "Submit report by Friday"
-   - "Vacation planning next week"
+The AI understands natural language input:
 
-3. **Tasks with priorities**:
-   - "Fix urgent bug in production"
-   - "Important: Review contract"
-   - "Low priority: organize photos"
+```
+"Buy groceries tomorrow at 5 PM"           → Task with due date
+"Call mom this weekend - important"         → High priority task
+"Finish project report by Friday urgent"    → Urgent priority with deadline
+"Workout at gym #fitness #health"          → Task with hashtags
+"Meeting with John next Tuesday 2 PM"       → Scheduled task
+```
 
-4. **Tasks with tags**:
-   - "Workout at gym #fitness #health"
-   - "Buy groceries #shopping #weekly"
+### Features in Detail
+
+#### Kanban Board
+- **Three columns**: Not Started, In Progress, Completed
+- **Drag & drop**: Move tasks between columns
+- **Task cards**: Show title, due date, priority, and hashtags
+- **Quick actions**: Edit, delete, start timer directly from cards
+
+#### Calendar View
+- **Monthly calendar**: Visual representation of tasks by date
+- **Task creation**: Click on any date to create tasks
+- **Task filtering**: Filter by hashtags across calendar view
+- **Date navigation**: Easy month-to-month navigation
+
+#### Timer Functionality
+- **Pomodoro timer**: 25-minute focused work sessions
+- **Header integration**: Timer displays in the app header when active
+- **Task association**: Timers are linked to specific tasks
+- **Controls**: Play, pause, and stop functionality
 
 ## 📱 Mobile Experience
 
-Optimized for mobile devices with:
-- **Touch-friendly interface**
-- **Responsive design**
-- **Offline capability**
-- **Fast loading times**
+- **Responsive design** that works on all screen sizes
+- **Touch-friendly** drag and drop interface
+- **Optimized navigation** for mobile devices
+- **Fast loading** with efficient API calls
 
+## 🔧 API Endpoints
 
+### Authentication
+- `GET /api/auth/google` - Initiate Google OAuth flow
+- `GET /api/auth/google/callback` - Handle OAuth callback
+- `GET /api/auth/user` - Get current user profile
 
-- **AI scoring patterns** and recommendations
-- **Common task types** and habits
-- **Weekly activity** summaries
-- **Personalized productivity tips**
-
-## 🎨 Features Overview
-
-### Core Functionality
-- ✅ Create, edit, delete tasks
-- ✅ Mark tasks as complete
-- ✅ Smart sorting and filtering
-- ✅ Responsive design for all devices
-
-### AI-Powered Features
-- 🧠 Natural language task creation
-- 📊 Intelligent priority scoring
-- 💡 Personalized recommendations
-
-- 📈 Pattern analysis and insights
-
-### User Experience
-- 🎨 Modern, intuitive interface
-- 📱 Mobile-friendly design
-- ⚡ Real-time updates
-- 🌙 Beautiful gradient backgrounds
-- 🔄 Smooth animations
-
-## 🚀 Advanced Features
-
-### Smart Recommendations
-The AI learns from your behavior:
-- Time-based suggestions (morning routines, weekly tasks)
-- Habit recognition (recurring tasks)
-- Context-aware recommendations
-
-
-
-### Natural Language Examples
-
-The NLP engine understands various formats:
-
-```
-"Buy groceries tomorrow at 5 PM"           → Task: Buy groceries, Due: Tomorrow 5 PM
-"Call mom this weekend - important"         → Task: Call mom, Due: This weekend, Priority: High
-"Finish project report by Friday urgent"    → Task: Finish project report, Due: Friday, Priority: Urgent
-"Workout at gym #fitness #health"          → Task: Workout at gym, Tags: fitness, health
-"Meeting with John next Tuesday 2 PM"       → Task: Meeting with John, Due: Next Tuesday 2 PM
-```
-
-## 🔧 Development
-
-### Project Structure
-```
-aitodo/
-├── client/                 # React frontend
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── App.js         # Main app component
-│   │   └── App.css        # Styles
-│   └── public/            # Static files
-├── server/                # Node.js backend
-│   ├── index.js          # Main server file
-│   └── package.json      # Server dependencies
-└── package.json          # Root package file
-```
-
-### API Endpoints
-
-- `GET /api/tasks` - Fetch all tasks
-- `POST /api/tasks` - Create new task (with NLP processing)
+### Tasks
+- `GET /api/tasks` - Fetch user's tasks
+- `POST /api/tasks` - Create new task (with AI processing)
 - `PUT /api/tasks/:id` - Update task
 - `DELETE /api/tasks/:id` - Delete task
-- `GET /api/recommendations` - Get AI recommendations
 
+### AI Features
+- `POST /api/ai/process-task` - Process natural language task input
+- `POST /api/ai/enhance-task` - Get AI suggestions for task improvement
 
-### Contributing
+### Users
+- `GET /api/users/profile` - Get user profile
+- `PUT /api/users/profile` - Update user profile
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+## 🏗️ Project Structure
+
+```
+aitodo/
+├── client/                     # React frontend
+│   ├── src/
+│   │   ├── components/         # React components
+│   │   │   ├── KanbanBoard.js  # Main kanban interface
+│   │   │   ├── TaskCalendar.js # Calendar view
+│   │   │   ├── Login.js        # Authentication
+│   │   │   ├── Settings.js     # User settings
+│   │   │   └── ...
+│   │   ├── App.js             # Main app component
+│   │   └── App.css            # Global styles
+│   └── package.json           # Frontend dependencies
+├── server-new/                # NestJS backend
+│   ├── src/
+│   │   ├── modules/           # Feature modules
+│   │   │   ├── auth/          # Authentication module
+│   │   │   ├── tasks/         # Task management
+│   │   │   ├── users/         # User management
+│   │   │   └── ai/            # AI processing
+│   │   ├── database/          # Database entities & migrations
+│   │   ├── common/            # Shared utilities
+│   │   └── main.ts            # Application entry point
+│   └── package.json           # Backend dependencies
+└── README.md                  # This file
+```
+
+## 🚀 Deployment
+
+### Environment Setup
+1. Set up PostgreSQL database
+2. Configure Google OAuth credentials
+3. Set environment variables
+4. Run database migrations
+
+### Production Build
+```bash
+# Build frontend
+cd client
+npm run build
+
+# Build backend
+cd ../server-new
+npm run build
+```
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
+1. **Database connection errors**
+   - Verify PostgreSQL is running
+   - Check database credentials in `.env`
+   - Ensure database exists and migrations are run
 
+2. **Google OAuth not working**
+   - Verify Google OAuth credentials
+   - Check redirect URLs in Google Console
+   - Ensure HTTPS in production
 
-2. **MongoDB connection issues**
-   - The app will fall back to in-memory storage
-   - Install and start MongoDB locally if needed
-   - Check the connection string in your .env file
+3. **AI features not working**
+   - Check OpenAI API key configuration
+   - Verify API quota and billing
+   - Check network connectivity
 
-3. **NLP not parsing correctly**
-   - Try more specific language
-   - Include time indicators ("tomorrow", "next week")
-   - Use priority keywords ("urgent", "important")
+### Development Tips
+- Use browser dev tools to check API responses
+- Check server logs for detailed error messages
+- Verify JWT tokens are being sent with requests
 
-### Browser Compatibility
+## 🤝 Contributing
 
-- ✅ Chrome (recommended for voice features)
-- ✅ Firefox
-- ✅ Safari
-- ✅ Edge
-
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📝 License
 
 MIT License - feel free to use this project for learning and development.
 
-## 🤝 Support
-
-If you encounter any issues or have questions:
-
-1. Check the troubleshooting section above
-2. Review the browser console for error messages
-3. Ensure all dependencies are properly installed
-4. Try restarting the development servers
-
 ## 🎉 What Makes This Special
 
-This isn't just another todo app - it's a showcase of how AI can enhance everyday productivity tools:
+This application showcases modern web development practices:
 
-- **Natural interaction**: Talk to your todo list like you would to a human assistant
-- **Intelligent automation**: Let AI handle the boring parts (prioritization, scheduling)
-- **Personalized experience**: The app learns and adapts to your habits
-- **Modern technology**: Built with the latest web technologies and AI libraries
+- **Full-stack TypeScript** for type safety across the entire application
+- **AI integration** that actually enhances user productivity
+- **Modern authentication** with Google OAuth and JWT
+- **Beautiful UI/UX** with smooth animations and responsive design
+- **Scalable architecture** using NestJS modules and React components
+- **Database best practices** with TypeORM and PostgreSQL
 
-Perfect for developers wanting to learn about:
-- Natural Language Processing in web apps
-
-- AI-powered user experiences
-- Modern React development
-- Full-stack JavaScript applications
+Perfect for developers wanting to learn:
+- Modern React development with hooks
+- NestJS backend architecture
+- AI/NLP integration in web applications
+- Authentication and authorization patterns
+- Database design and ORM usage
+- Responsive UI design principles
 
 ---
 
