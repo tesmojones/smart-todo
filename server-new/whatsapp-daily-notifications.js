@@ -3,84 +3,72 @@
 /**
  * Cron script to send WhatsApp notifications for tasks due today
  * Runs daily at 06:00 AM to notify users about their due tasks
- * Uses WAHA (WhatsApp HTTP API) for sending messages
+ * Uses whatsapp-web.js for sending messages
  */
 
 const { Client } = require('pg');
 const axios = require('axios');
-require('dotenv').config({ path: '../server-new/.env' });
-
-
+require('dotenv').config({ path: './.env' });
 
 // Database configuration using DATABASE_URL
 const client = new Client({
   connectionString: process.env.DATABASE_URL
 });
 
-// WAHA API Configuration
-const WAHA_CONFIG = {
-  baseUrl: process.env.WAHA_BASE_URL || 'http://localhost:3000', // WAHA server URL
-  session: process.env.WAHA_SESSION || 'default', // WhatsApp session name
-  apiKey: process.env.WAHA_API_KEY || '', // Optional API key if WAHA requires authentication
-};
+// WhatsApp API configuration - using the NestJS WhatsApp service
+const WHATSAPP_API_BASE_URL = process.env.WHATSAPP_API_BASE_URL || 'http://localhost:5001/api/whatsapp';
 
-// WhatsApp phone numbers mapping (you can configure this based on user emails or IDs)
-// Format: { 'user@email.com': '+1234567890' }
-const WHATSAPP_NUMBERS = {
-  // Add user email to WhatsApp number mappings here
-  // Example: 'john@example.com': '+1234567890'
-  // Add your email and phone number mapping:
-  // 'your-email@example.com': '+628125999849'
-};
+// WhatsApp phone numbers will be fetched from the database
+// No longer using hardcoded mapping
 
 /**
- * Send WhatsApp message using WAHA API
+ * Check WhatsApp service status
+ * @returns {Promise<boolean>} - Success status
+ */
+async function checkWhatsAppService() {
+  try {
+    const response = await axios.get(`${WHATSAPP_API_BASE_URL}/status`);
+    const { isReady } = response.data;
+    
+    if (isReady) {
+      console.log('✅ WhatsApp service is ready!');
+      return true;
+    } else {
+      console.log('⚠️  WhatsApp service is not ready. Please ensure the NestJS server is running and WhatsApp is authenticated.');
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error checking WhatsApp service:', error.message);
+    console.log('💡 Make sure the NestJS server is running on the configured port.');
+    return false;
+  }
+}
+
+/**
+ * Send WhatsApp message using NestJS WhatsApp service
  * @param {string} phoneNumber - WhatsApp number (with country code)
  * @param {string} message - Message to send
  * @returns {Promise<boolean>} - Success status
  */
 async function sendWhatsAppMessage(phoneNumber, message) {
-  const wahaBaseUrl = process.env.WAHA_BASE_URL || 'http://localhost:3000';
-  const wahaSession = process.env.WAHA_SESSION || 'default';
-  const wahaApiKey = process.env.WAHA_API_KEY || '';
-  
-  // Format phone number: remove '+' and any spaces/dashes, then add @c.us
-  const cleanPhoneNumber = phoneNumber.replace(/[+\s-]/g, '');
-  
-  const data = {
-    session: wahaSession,
-    chatId: `${cleanPhoneNumber}@c.us`,
-    text: message
-  };
-
-  const url = `${wahaBaseUrl}/api/sendText`;
-  const headers = {
-    'Content-Type': 'application/json'
-  };
-  
-  // Add API key if provided
-  if (wahaApiKey) {
-    headers['X-Api-Key'] = wahaApiKey;
-  }
-  
   try {
-    const response = await axios.post(url, data, {
-      headers,
-      timeout: 10000 // 10 second timeout
+    const response = await axios.post(`${WHATSAPP_API_BASE_URL}/send-message`, {
+      to: phoneNumber,
+      message: message
     });
-    
-    if (response.status >= 200 && response.status < 300) {
-      console.log(`✓ WhatsApp message sent to ${phoneNumber}`);
+
+    if (response.status === 200 || response.status === 201) {
+      console.log(`✅ WhatsApp message sent to ${phoneNumber}`);
       return true;
     } else {
-      console.error(`✗ Failed to send WhatsApp message to ${phoneNumber}:`, response.status, response.data);
+      console.error(`❌ Failed to send WhatsApp message to ${phoneNumber}. Status: ${response.status}`);
       return false;
     }
   } catch (error) {
-    console.error(`✗ Error sending WhatsApp message to ${phoneNumber}:`, error.message);
+    console.error(`❌ Error sending WhatsApp message to ${phoneNumber}:`, error.message);
     if (error.response) {
-      console.error('Response status:', error.response.status);
-      console.error('Response data:', error.response.data);
+      console.error(`Response status: ${error.response.status}`);
+      console.error(`Response data:`, error.response.data);
     }
     return false;
   }
@@ -164,6 +152,13 @@ async function sendDailyNotifications() {
   try {
     console.log(`[${new Date().toISOString()}] Starting daily WhatsApp notifications...`);
     
+    // Check WhatsApp service status
+    console.log('📱 Checking WhatsApp service...');
+    const whatsappReady = await checkWhatsAppService();
+    if (!whatsappReady) {
+      throw new Error('WhatsApp service is not ready');
+    }
+    
     await client.connect();
     console.log('✓ Connected to database');
 
@@ -182,6 +177,7 @@ async function sendDailyNotifications() {
         u.id as user_id,
         u.name as user_name,
         u.email as user_email,
+        u.whatsapp_number,
         t.id as task_id,
         t.title,
         t.priority,
@@ -194,6 +190,7 @@ async function sendDailyNotifications() {
         t.due_date >= $1 
         AND t.due_date <= $2
         AND t.status != 'completed'
+        AND u.whatsapp_number IS NOT NULL
       ORDER BY u.id, t.priority DESC, t.created_at ASC
     `;
 
@@ -212,6 +209,7 @@ async function sendDailyNotifications() {
         userTasks[row.user_id] = {
           name: row.user_name,
           email: row.user_email,
+          whatsappNumber: row.whatsapp_number,
           tasks: []
         };
       }
@@ -236,8 +234,8 @@ async function sendDailyNotifications() {
 
     for (const [userId, userData] of Object.entries(userTasks)) {
       try {
-        // Get WhatsApp number for user (you may need to modify this logic)
-        const whatsappNumber = WHATSAPP_NUMBERS[userData.email];
+        // Get WhatsApp number from database
+        const whatsappNumber = userData.whatsappNumber;
         
         if (!whatsappNumber) {
           console.log(`⚠️  No WhatsApp number configured for user: ${userData.email}`);
@@ -281,6 +279,9 @@ async function sendDailyNotifications() {
     } catch (error) {
       console.error('⚠️  Error closing database connection:', error.message);
     }
+    
+    // WhatsApp service cleanup not needed - managed by NestJS server
+    console.log('✓ WhatsApp notifications completed');
   }
 }
 
@@ -301,4 +302,9 @@ if (require.main === module) {
 }
 
 // Export functions for testing
-module.exports = { sendWhatsAppMessage, createTaskMessage, main: sendDailyNotifications };
+module.exports = { 
+  sendWhatsAppMessage, 
+  createTaskMessage, 
+  checkWhatsAppService,
+  main: sendDailyNotifications 
+};

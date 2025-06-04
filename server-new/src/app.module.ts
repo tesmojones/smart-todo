@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { AiModule } from './modules/ai/ai.module';
+import { WhatsappModule } from './modules/whatsapp/whatsapp.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -39,6 +40,7 @@ import { AppService } from './app.service';
     UsersModule,
     TasksModule,
     AiModule,
+    WhatsappModule,
   ],
   controllers: [AppController],
   providers: [AppService],

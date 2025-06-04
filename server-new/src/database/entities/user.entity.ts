@@ -31,6 +31,10 @@ export class User {
   @Column({ nullable: true, length: 500 })
   picture: string;
 
+  @ApiProperty({ description: 'User WhatsApp phone number' })
+  @Column({ name: 'whatsapp_number', nullable: true, length: 20 })
+  whatsappNumber: string;
+
   @ApiProperty({ description: 'User creation timestamp' })
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

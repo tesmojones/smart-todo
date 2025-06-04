@@ -65,7 +65,7 @@ async function testDatabaseConnection() {
 async function testWAHAConfiguration() {
   console.log('\n🔍 Testing WAHA API configuration...');
   
-  const wahaBaseUrl = process.env.WAHA_BASE_URL || 'http://localhost:3000';
+  const wahaBaseUrl = process.env.WAHA_BASE_URL || 'http://localhost:3001';
   const wahaSession = process.env.WAHA_SESSION || 'default';
   const wahaApiKey = process.env.WAHA_API_KEY || '';
   

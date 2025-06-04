@@ -6,7 +6,7 @@
  */
 
 const { Client } = require('pg');
-require('dotenv').config({ path: '../server-new/.env' });
+require('dotenv').config({ path: './.env' });
 
 // Database configuration using DATABASE_URL
 const client = new Client({

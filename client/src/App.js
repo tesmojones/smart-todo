@@ -4,7 +4,6 @@ import { CheckSquare, Sparkles, Pause, Play, X } from 'lucide-react';
 import KanbanBoard from './components/KanbanBoard';
 import TaskInput from './components/TaskInput';
 import Login from './components/Login';
-import TaskCalendar from './components/TaskCalendar';
 import Settings from './components/Settings';
 import TabbedNavigation from './components/TabbedNavigation';
 import './App.css';
@@ -110,7 +109,7 @@ function App() {
       clearInterval(timerInterval);
       setTimerInterval(null);
     }
-  }, [isTimerRunning, timeRemaining]);
+  }, [isTimerRunning, timeRemaining, timerInterval]);
 
   // Update document title with timer information
   useEffect(() => {
@@ -326,40 +325,7 @@ function App() {
     }
   }, []);
 
-
-
-  // Create new task
-  const createTask = async (input, additionalData = {}) => {
-    setIsLoading(true);
-    try {
-      // Handle case where input is an object (from TaskInput component)
-      let taskData = {};
-      if (typeof input === 'object' && input !== null) {
-        // Extract properties from the input object
-        taskData = {
-          title: input.text || input.title,
-          input: input.text || input.title,
-          taskType: input.taskType,
-          aiEnhancements: input.aiEnhancements,
-          ...input,
-          ...additionalData
-        };
-      } else {
-        // Handle case where input is a string
-        taskData = {
-          input,
-          ...additionalData
-        };
-      }
-      
-      const response = await axios.post(`${API_BASE}/tasks`, taskData);
-      setTasks(prev => [response.data, ...prev]);
-    } catch (error) {
-      console.error('Error creating task:', error);
-    }
-    setIsLoading(false);
-  };
-
+ 
   // Create task with specific date
   const createTaskWithDate = async (input, selectedDate, additionalData = {}) => {
     setIsLoading(true);
@@ -554,19 +520,11 @@ function App() {
       {showSettingsModal && (
         <div className="modal-overlay" onClick={() => setShowSettingsModal(false)}>
           <div className="modal-content settings-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Settings</h2>
-              <button 
-                className="modal-close-btn"
-                onClick={() => setShowSettingsModal(false)}
-              >
-                ×
-              </button>
-            </div>
+            
             <div className="modal-body">
               <Settings 
                 user={user}
-                onUpdateUser={() => {}}
+                onUpdateUser={(updatedUser) => setUser(updatedUser)}
                 onLogout={() => {
                   handleLogin(null);
                   setShowSettingsModal(false);

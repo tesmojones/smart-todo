@@ -55,6 +55,11 @@ export class UsersService {
     return await this.findById(id);
   }
 
+  async updateWhatsAppNumber(id: string, whatsappNumber: string): Promise<User> {
+    await this.userRepository.update(id, { whatsappNumber });
+    return await this.findById(id);
+  }
+
   async delete(id: string): Promise<void> {
     const result = await this.userRepository.delete(id);
     if (result.affected === 0) {
