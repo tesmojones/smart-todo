@@ -35,7 +35,7 @@ A modern, scalable backend for the AI Todo application built with NestJS, TypeSc
 
 1. **Clone and navigate to the server directory**:
    ```bash
-   cd server-new
+   cd server
    ```
 
 2. **Install dependencies**:

@@ -206,7 +206,7 @@ async function runTests() {
   
   console.log('\n💡 RECOMMENDATIONS:');
   if (!testResults.serverRunning) {
-    console.log('- Start the server: cd server-new && npm start');
+    console.log('- Start the server: cd server && npm start');
   }
   if (!testResults.clientRunning) {
     console.log('- Start the client: cd client && npm start');

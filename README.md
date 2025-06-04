@@ -77,13 +77,13 @@ A modern, AI-powered task management application featuring intelligent task proc
    npm install
    
    # Install server dependencies
-   cd ../server-new
+   cd ../server
    npm install
    ```
 
 3. **Set up environment variables**
    
-   Create `.env` file in `server-new` directory:
+   Create `.env` file in `server` directory:
    ```env
    # Database
    DATABASE_HOST=localhost
@@ -109,13 +109,13 @@ A modern, AI-powered task management application featuring intelligent task proc
 4. **Set up the database**
    ```bash
    # Run database migrations
-   cd server-new
+   cd server
    npm run migration:run
    ```
 
 5. **Start the development servers**
    ```bash
-   # Start backend server (from server-new directory)
+   # Start backend server (from server directory)
    npm run start:dev
    
    # Start frontend server (from client directory)
@@ -212,7 +212,7 @@ aitodo/
 │   │   ├── App.js             # Main app component
 │   │   └── App.css            # Global styles
 │   └── package.json           # Frontend dependencies
-├── server-new/                # NestJS backend
+├── server/                # NestJS backend
 │   ├── src/
 │   │   ├── modules/           # Feature modules
 │   │   │   ├── auth/          # Authentication module
@@ -241,7 +241,7 @@ cd client
 npm run build
 
 # Build backend
-cd ../server-new
+cd ../server
 npm run build
 ```
 
