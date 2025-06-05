@@ -43,7 +43,7 @@ const Login = ({ onLogin }) => {
       }
       
       console.log('📡 [DEBUG] Login component: Making auth request...');
-      const response = await axios.get('http://127.0.0.1:5001/api/auth/user');
+      const response = await axios.get('http://api.tesmo.my.id:2053/api/auth/user');
       console.log('✅ [DEBUG] Login component: Auth request successful:', {
         status: response.status,
         userData: response.data.user,
@@ -75,7 +75,7 @@ const Login = ({ onLogin }) => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://127.0.0.1:5001/api/auth/google';
+    window.location.href = 'http://api.tesmo.my.id:2053/api/auth/google';
   };
 
   const handleLogout = () => {

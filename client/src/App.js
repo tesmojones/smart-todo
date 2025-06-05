@@ -8,7 +8,7 @@ import Settings from './components/Settings';
 import TabbedNavigation from './components/TabbedNavigation';
 import './App.css';
 
-const API_BASE = 'http://127.0.0.1:5001/api';
+const API_BASE = 'http://api.tesmo.my.id:2053/api';
 
 // Token management utilities
 const getToken = () => localStorage.getItem('jwt_token');
@@ -173,7 +173,7 @@ function App() {
     
     try {
       console.log('📡 [DEBUG] Making auth request to /api/auth/user...');
-      const response = await axios.get('http://127.0.0.1:5001/api/auth/user');
+      const response = await axios.get('http://api.tesmo.my.id:2053/api/auth/user');
       console.log('✅ [DEBUG] Auth request successful:', {
         status: response.status,
         userData: response.data.user,
