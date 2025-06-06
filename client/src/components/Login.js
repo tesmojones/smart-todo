@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Settings, LogOut } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api';
 import './Login.css';
 
 // Token management utilities
@@ -26,56 +27,29 @@ const Login = ({ onLogin }) => {
   }, []);
 
   const checkAuthStatus = async () => {
-    console.log('🔍 [DEBUG] Login component checkAuthStatus starting...');
     const token = getToken();
-    console.log('🎫 [DEBUG] Login component token check:', {
-      hasToken: !!token,
-      tokenLength: token ? token.length : 0,
-      tokenPreview: token ? token.substring(0, 20) + '...' : 'None'
-    });
     
     try {
       // Only check auth if we have a token
       if (!token) {
-        console.log('🚫 [DEBUG] Login component: No token found, setting loading to false');
         setLoading(false);
         return;
       }
       
-      console.log('📡 [DEBUG] Login component: Making auth request...');
-      const response = await axios.get('http://api.tesmo.my.id:2053/api/auth/user');
-      console.log('✅ [DEBUG] Login component: Auth request successful:', {
-        status: response.status,
-        userData: response.data.user,
-        hasUserData: !!response.data.user,
-        userKeys: response.data.user ? Object.keys(response.data.user) : 'N/A'
-      });
+      const response = await axios.get(API_ENDPOINTS.AUTH.USER);
       
       setUser(response.data.user);
-      console.log('🔑 [DEBUG] Login component: Calling onLogin with userData:', {
-        userData: response.data.user,
-        hasUserData: !!response.data.user
-      });
       onLogin(response.data.user);
     } catch (error) {
-      console.error('❌ [DEBUG] Login component: Auth check failed:', {
-        error: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data
-      });
-      console.log('🧹 [DEBUG] Login component: Removing invalid token');
       removeToken(); // Clear invalid token
-      console.log('🔑 [DEBUG] Login component: Calling onLogin with null due to error');
       onLogin(null);
     } finally {
-      console.log('🏁 [DEBUG] Login component: Setting loading to false');
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://api.tesmo.my.id:2053/api/auth/google';
+    window.location.href = API_ENDPOINTS.AUTH.GOOGLE;
   };
 
   const handleLogout = () => {

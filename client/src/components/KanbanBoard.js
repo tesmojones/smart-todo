@@ -454,23 +454,14 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
 
   // Filter tasks by selected date using YYYYMMDD format (ignore timezone)
   const filterTasksByDate = (taskList) => {
-    console.log('🗓️ [DEBUG] filterTasksByDate called:', {
-      taskListLength: Array.isArray(taskList) ? taskList.length : 'not array',
-      taskList: taskList,
-      selectedDate: selectedDate
-    });
-    
     // Convert selected date to YYYYMMDD format
     const selectedYear = selectedDate.getFullYear();
     const selectedMonth = String(selectedDate.getMonth() + 1).padStart(2, '0');
     const selectedDay = String(selectedDate.getDate()).padStart(2, '0');
     const selectedDateStr = `${selectedYear}${selectedMonth}${selectedDay}`;
-    
-    console.log('🗓️ [DEBUG] Selected date string:', selectedDateStr);
 
     const filteredTasks = taskList.filter(task => {
       if (!task.createdAt) {
-        console.log('❌ Task without created_at:', task.title);
         return false;
       }
       // Use the date string as-is (ignore timezone)
@@ -480,20 +471,7 @@ const KanbanBoard = ({ tasks, onUpdateTask, onDeleteTask, onHashtagClick, onCrea
       const taskDay = String(taskDate.getDate()).padStart(2, '0');
       const taskDateStr = `${taskYear}${taskMonth}${taskDay}`;
       const matches = taskDateStr === selectedDateStr;
-      console.log('🗓️ [DEBUG] Task date check:', {
-        taskTitle: task.title,
-        taskCreatedAt: task.createdAt,
-        taskDateStr: taskDateStr,
-        selectedDateStr: selectedDateStr,
-        matches: matches
-      });
       return matches;
-    });
-    
-    console.log('🗓️ [DEBUG] Filtered tasks result:', {
-      originalCount: taskList.length,
-      filteredCount: filteredTasks.length,
-      filteredTasks: filteredTasks
     });
     
     return filteredTasks;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { User, Bell, Save } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api';
 
 const Settings = ({ user, onUpdateUser, onLogout }) => {
   const [settings, setSettings] = useState({
@@ -60,7 +61,7 @@ const Settings = ({ user, onUpdateUser, onLogout }) => {
       }
       
       if (hasProfileChanges) {
-        await axios.put('/api/users/profile', profileChanges);
+        await axios.put(API_ENDPOINTS.USERS.PROFILE, profileChanges);
         
         // Update user object with new data
         if (onUpdateUser) {

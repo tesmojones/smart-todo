@@ -6,9 +6,8 @@ import TaskInput from './components/TaskInput';
 import Login from './components/Login';
 import Settings from './components/Settings';
 import TabbedNavigation from './components/TabbedNavigation';
+import { API_BASE, API_ENDPOINTS } from './config/api';
 import './App.css';
-
-const API_BASE = 'http://api.tesmo.my.id:2053/api';
 
 // Token management utilities
 const getToken = () => localStorage.getItem('jwt_token');
@@ -38,16 +37,7 @@ function App() {
   const [selectedHashtag, setSelectedHashtag] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   
-  // Debug: Log user state changes
-  useEffect(() => {
-    console.log('🔍 [DEBUG] User state changed:', {
-      user: user,
-      hasUser: !!user,
-      userType: typeof user,
-      userKeys: user ? Object.keys(user) : 'N/A',
-      timestamp: new Date().toISOString()
-    });
-  }, [user]);
+
 
   // Function to play tick sound
   const playTickSound = () => {
@@ -105,11 +95,10 @@ function App() {
       }, 1000);
       setTimerInterval(interval);
       return () => clearInterval(interval);
-    } else if (timerInterval) {
-      clearInterval(timerInterval);
+    } else {
       setTimerInterval(null);
     }
-  }, [isTimerRunning, timeRemaining, timerInterval]);
+  }, [isTimerRunning, timeRemaining]);
 
   // Update document title with timer information
   useEffect(() => {
@@ -129,23 +118,7 @@ function App() {
     };
   }, [activeTimerTask, isTimerRunning, timeRemaining]);
   
-  // Debug: Log tasks state changes
-  useEffect(() => {
-    console.log('📋 [DEBUG] Tasks state changed:', {
-      tasksType: typeof tasks,
-      tasksLength: Array.isArray(tasks) ? tasks.length : 'not array',
-      tasks: tasks,
-      timestamp: new Date().toISOString()
-    });
-  }, [tasks]);
-  
-  // Debug: Log auth loading state changes
-  useEffect(() => {
-    console.log('⏳ [DEBUG] Auth loading state changed:', {
-      authLoading: authLoading,
-      timestamp: new Date().toISOString()
-    });
-  }, [authLoading]);
+
 
   // Listen for settings open event from dropdown
   useEffect(() => {
@@ -163,57 +136,28 @@ function App() {
 
   // Check authentication status
   const checkAuth = async () => {
-    console.log('🔐 [DEBUG] Starting checkAuth...');
     const token = getToken();
-    console.log('🎫 [DEBUG] Current token:', {
-      hasToken: !!token,
-      tokenLength: token ? token.length : 0,
-      tokenPreview: token ? token.substring(0, 20) + '...' : 'None'
-    });
     
     try {
-      console.log('📡 [DEBUG] Making auth request to /api/auth/user...');
-      const response = await axios.get('http://api.tesmo.my.id:2053/api/auth/user');
-      console.log('✅ [DEBUG] Auth request successful:', {
-        status: response.status,
-        userData: response.data.user,
-        hasUserData: !!response.data.user,
-      });
+      const response = await axios.get(API_ENDPOINTS.AUTH.USER);
       setUser(response.data.user);
       return true;
     } catch (error) {
-      console.error('❌ [DEBUG] Auth check failed:', {
-        error: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data
-      });
       setUser(null);
       removeToken(); // Clear invalid token
       return false;
     } finally {
-      console.log('🏁 [DEBUG] Setting authLoading to false');
       setAuthLoading(false);
     }
   };
 
   // Fetch tasks
   const fetchTasks = async () => {
-    console.log('📋 [DEBUG] fetchTasks called');
     try {
       const response = await axios.get(`${API_BASE}/tasks`);
-      console.log('📋 [DEBUG] fetchTasks response:', {
-        status: response.status,
-        dataType: typeof response.data,
-        dataLength: Array.isArray(response.data) ? response.data.length : 'not array',
-        data: response.data
-      });
       setTasks(response.data);
-      console.log('📋 [DEBUG] Tasks state updated');
     } catch (error) {
-      console.error('❌ [DEBUG] Error fetching tasks:', error);
       if (error.response?.status === 401) {
-        console.log('🚫 [DEBUG] 401 error in fetchTasks, clearing user state');
         setUser(null);
         removeToken(); // Clear invalid token
       }
@@ -222,17 +166,11 @@ function App() {
 
   // Handle login
   const handleLogin = (userData) => {
-    console.log('🔑 [DEBUG] handleLogin called with:', {
-      userData: userData,
-      hasUserData: !!userData,
-      userDataType: typeof userData
-    });
     setUser(userData);
     if (userData) {
       fetchTasks();
     } else {
       // Handle logout - clear token
-      console.log('🚪 [DEBUG] Logging out, removing token');
       removeToken();
     }
   };
@@ -268,24 +206,14 @@ function App() {
 
 
   useEffect(() => {
-    console.log('🚀 [DEBUG] App useEffect starting...');
     // Check for JWT token in URL (from OAuth callback)
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     
-    console.log('🔍 [DEBUG] URL token check:', {
-      hasTokenInURL: !!token,
-      tokenPreview: token ? token.substring(0, 20) + '...' : 'None',
-      currentPath: window.location.pathname,
-      currentSearch: window.location.search
-    });
-    
     if (token) {
-      console.log('💾 [DEBUG] Saving token from URL to localStorage');
       setToken(token);
       // Clean up URL and redirect to main page if on callback path
       if (window.location.pathname === '/auth/callback') {
-        console.log('🔄 [DEBUG] Cleaning up callback URL');
         window.history.replaceState({}, document.title, '/');
       } else {
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -294,33 +222,21 @@ function App() {
     
     // Handle callback path without token (redirect to main page)
     if (window.location.pathname === '/auth/callback' && !token) {
-      console.log('⚠️ [DEBUG] Callback path without token, redirecting to main page');
       window.history.replaceState({}, document.title, '/');
     }
     
     // Only check auth if we have a token
     const currentToken = getToken();
-    console.log('🎫 [DEBUG] Current token status:', {
-      hasToken: !!currentToken,
-      tokenSource: token ? 'URL' : (currentToken ? 'localStorage' : 'None')
-    });
     
     if (currentToken) {
-      console.log('🔐 [DEBUG] Token found, checking authentication...');
       checkAuth().then((isAuthenticated) => {
-        console.log('✅ [DEBUG] Authentication check result:', { isAuthenticated });
         if (isAuthenticated) {
-          console.log('🎉 [DEBUG] Authentication successful, fetching tasks...');
           fetchTasks();
           // Note: user state is already set in checkAuth function
           // No need to call handleLogin here as setUser is already called
-        } else {
-          console.log('❌ [DEBUG] Authentication failed');
-          // handleLogin is called with null in checkAuth on failure
         }
       });
     } else {
-      console.log('🚫 [DEBUG] No token found, setting authLoading to false');
       setAuthLoading(false);
     }
   }, []);
@@ -396,7 +312,7 @@ function App() {
 
   // Show loading while checking authentication
   if (authLoading) {
-    console.log('⏳ [DEBUG] Showing auth loading screen');
+
     return (
       <div className="App">
         <div className="auth-loading">
@@ -409,22 +325,11 @@ function App() {
 
   // Show login if not authenticated
   if (!user) {
-    console.log('🔒 [DEBUG] No user found, showing login screen:', {
-      user: user,
-      userType: typeof user,
-      authLoading: authLoading,
-      hasToken: !!getToken(),
-      timestamp: new Date().toISOString()
-    });
+
     return <Login onLogin={handleLogin} />;
   }
 
-  console.log('🎉 [DEBUG] User authenticated, showing main app:', {
-    user: user,
-    userId: user?.id,
-    userEmail: user?.email,
-    timestamp: new Date().toISOString()
-  });
+
 
   return (
     <div className="App">

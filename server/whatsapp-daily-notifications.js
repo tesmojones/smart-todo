@@ -16,7 +16,7 @@ const client = new Client({
 });
 
 // WhatsApp API configuration - using the NestJS WhatsApp service
-const WHATSAPP_API_BASE_URL = process.env.WHATSAPP_API_BASE_URL || 'http://localhost:2053/api/whatsapp';
+const WHATSAPP_API_BASE_URL = process.env.WHATSAPP_API_BASE_URL || 'http://localhost:5001/api/whatsapp';
 
 // WhatsApp phone numbers will be fetched from the database
 // No longer using hardcoded mapping

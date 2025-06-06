@@ -22,7 +22,7 @@ async function bootstrap() {
 
   // CORS configuration
   app.enableCors({
-    origin: configService.get('CORS_ORIGIN') || 'http://todo.tesmo.my.id',
+    origin: configService.get('CORS_ORIGIN'),
     credentials: true,
   });
 
@@ -38,7 +38,7 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
   }
 
-  const port = configService.get('PORT') || 2053;
+  const port = configService.get('PORT') || 5001;
   await app.listen(port);
   console.log(`🚀 Application is running on: http://localhost:${port}`);
   console.log(`📚 Swagger documentation: http://localhost:${port}/api/docs`);
