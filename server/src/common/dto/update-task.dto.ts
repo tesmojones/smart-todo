@@ -48,4 +48,9 @@ export class UpdateTaskDto {
   @IsOptional()
   @IsDateString()
   createdAt?: string;
+
+  @ApiPropertyOptional({ description: 'Number of completed Pomodoro sessions' })
+  @IsOptional()
+  @IsNumber()
+  pomodoroCount?: number;
 }

@@ -61,6 +61,10 @@ export class Task {
   @Column({ default: 0 })
   position: number;
 
+  @ApiProperty({ description: 'Number of completed Pomodoro sessions' })
+  @Column({ name: 'pomodoro_count', default: 0 })
+  pomodoroCount: number;
+
   @ApiProperty({ description: 'User ID who owns this task' })
   @Column({ name: 'user_id' })
   userId: string;

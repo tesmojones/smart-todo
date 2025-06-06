@@ -87,6 +87,12 @@ function App() {
         setTimeRemaining(prev => {
           if (prev <= 1) {
             setIsTimerRunning(false);
+            // Increment pomodoro count for the active task
+            if (activeTimerTask) {
+              updateTask(activeTimerTask.id, { 
+                pomodoroCount: (activeTimerTask.pomodoroCount || 0) + 1 
+              });
+            }
             setActiveTimerTask(null);
             return 25 * 60; // Reset timer
           }

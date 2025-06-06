@@ -119,6 +119,8 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
         opacity: isDragging ? 0.8 : isTaskDisabled ? 0.5 : 1,
       }}
     >
+     
+      
       <div className="task-content">
         <div className="task-header">
           {isEditing ? (
@@ -229,6 +231,16 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
         )}
       </div>
 
+      {/* Pomodoro bullets at top */}
+      {task.pomodoroCount > 0 && (
+        <div className="task-pomodoro-top">
+          <div className="pomodoro-bullets">
+            {Array.from({ length: task.pomodoroCount }, (_, index) => (
+              <span key={index} className="pomodoro-bullet">•</span>
+            ))}
+          </div>
+        </div>
+      )}
       {/* Bottom section with play button, priority, and due date */}
       <div className="task-bottom-section">
         <div className="task-bottom-left">
@@ -250,6 +262,8 @@ const TaskCard = ({ task, onUpdateTask, onDeleteTask, onHashtagClick, onEdit, ac
               </span>
             </div>
           )}
+
+
 
           {task.dueDate && (
             <div className="due-date-item">

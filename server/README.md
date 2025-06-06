@@ -67,7 +67,7 @@ A modern, scalable backend for the AI Todo application built with NestJS, TypeSc
    
    # Server
    PORT=3001
-   CORS_ORIGIN=http://localhost:3000
+   CORS_ORIGIN=http://127.0.0.1:3000
    SESSION_SECRET=your-session-secret
    ```
 
@@ -190,7 +190,7 @@ Get personalized productivity recommendations based on user patterns and task hi
 | `GOOGLE_CALLBACK_URL` | Google OAuth callback URL | Yes | - |
 | `OPENAI_API_KEY` | OpenAI API key for enhanced AI features | No | - |
 | `PORT` | Server port | No | 3001 |
-| `CORS_ORIGIN` | Frontend URL for CORS | No | http://localhost:3000 |
+| `CORS_ORIGIN` | Frontend URL for CORS | No | http://127.0.0.1:3000 |
 | `SESSION_SECRET` | Session secret for security | Yes | - |
 
 ## Architecture

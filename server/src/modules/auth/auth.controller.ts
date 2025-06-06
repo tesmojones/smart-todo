@@ -34,14 +34,14 @@ export class AuthController {
       const loginResult = await this.authService.login(user);
       
       // Redirect to frontend with token
-      const frontendUrl = process.env.CORS_ORIGIN || 'http://localhost:3000';
+      const frontendUrl = process.env.CORS_ORIGIN || 'http://127.0.0.1:3000';
       const redirectUrl = `${frontendUrl}/auth/callback?token=${loginResult.access_token}`;
       
       this.logger.log(`Redirecting user ${user.id} to frontend`);
       res.redirect(redirectUrl);
     } catch (error) {
       this.logger.error('Google auth callback failed:', error.message);
-      const frontendUrl = process.env.CORS_ORIGIN || 'http://localhost:3000';
+      const frontendUrl = process.env.CORS_ORIGIN || 'http://127.0.0.1:3000';
       res.redirect(`${frontendUrl}/auth/error`);
     }
   }
